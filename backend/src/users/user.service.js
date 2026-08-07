@@ -1,46 +1,53 @@
-import * as userRepository from "./user.repository.js";
-import bcrypt from "bcryptjs";
-import jwt from "jsonwebtoken";
-
-const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
+import admin from "firebase-admin";
 
 export const register = async ({ email, password, name }) => {
-   const existingUser = await userRepository.findByEmail(email);
-   if (existingUser) {
-      throw new Error("Email đã tồn tại trên hệ thống.");
+   try {
+      const userRecord = await admin.auth().createUser({
+         email,
+         password,
+         displayName: name
+      });
+      
+      return {
+         id: userRecord.uid,
+         email: userRecord.email,
+         name: userRecord.displayName
+      };
+   } catch (error) {
+      throw new Error(`Đăng ký Firebase thất bại: ${error.message}`);
    }
-
-   const salt = await bcrypt.genSalt(10);
-   const passwordHash = await bcrypt.hash(password, salt);
-
-   const newUser = await userRepository.create({
-      email,
-      passwordHash,
-      name
-   });
-
-   return { id: newUser.id, email: newUser.email, name: newUser.name };
 };
 
 export const login = async ({ email, password }) => {
-   const user = await userRepository.findByEmail(email);
-   if (!user) {
-      throw new Error("Email hoặc mật khẩu không hợp lệ.");
+   const apiKey = process.env.FIREBASE_API_KEY;
+   if (!apiKey) {
+      throw new Error("Hệ thống thiếu cấu hình FIREBASE_API_KEY trong tệp .env.");
    }
 
-   const isMatch = await bcrypt.compare(password, user.passwordHash);
-   if (!isMatch) {
-      throw new Error("Email hoặc mật khẩu không hợp lệ.");
+   const url = `https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=${apiKey}`;
+
+   try {
+      const response = await fetch(url, {
+         method: "POST",
+         headers: { "Content-Type": "application/json" },
+         body: JSON.stringify({ email, password, returnSecureToken: true })
+      });
+
+      if (!response.ok) {
+         const errorData = await response.json();
+         throw new Error(errorData.error?.message || "Đăng nhập thất bại.");
+      }
+
+      const data = await response.json();
+      
+      return {
+         token: data.idToken, // ID Token này sẽ dùng làm Bearer Token cho các API khác
+         user: {
+            id: data.localId,
+            email: data.email
+         }
+      };
+   } catch (error) {
+      throw new Error(`Đăng nhập Firebase thất bại: ${error.message}`);
    }
-
-   const token = jwt.sign(
-      { userId: user.id, email: user.email },
-      JWT_SECRET,
-      { expiresIn: "24h" }
-   );
-
-   return {
-      token,
-      user: { id: user.id, email: user.email, name: user.name }
-   };
 };

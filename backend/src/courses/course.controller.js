@@ -1,5 +1,5 @@
 import express from "express";
-import * as competitorService from "./competitor.service.js";
+import * as courseService from "./course.service.js";
 import { authMiddleware } from "../middleware/auth.middleware.js";
 
 const router = express.Router();
@@ -7,7 +7,7 @@ router.use(authMiddleware);
 
 router.get("/", async (req, res) => {
    try {
-      const data = await competitorService.getCompetitorsByUserId(req.user.userId);
+      const data = await courseService.getCoursesByUserId(req.user.userId);
       return res.status(200).json(data);
    } catch (error) {
       return res.status(500).json({ message: error.message });
@@ -16,7 +16,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
    try {
-      const data = await competitorService.getCompetitorById(req.params.id, req.user.userId);
+      const data = await courseService.getCourseById(req.params.id, req.user.userId);
       return res.status(200).json(data);
    } catch (error) {
       return res.status(404).json({ message: error.message });
@@ -25,7 +25,7 @@ router.get("/:id", async (req, res) => {
 
 router.post("/", async (req, res) => {
    try {
-      const data = await competitorService.createCompetitor(req.body, req.user.userId);
+      const data = await courseService.createCourse(req.body, req.user.userId);
       return res.status(201).json(data);
    } catch (error) {
       return res.status(400).json({ message: error.message });
@@ -34,7 +34,7 @@ router.post("/", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
    try {
-      const data = await competitorService.updateCompetitor(req.params.id, req.body, req.user.userId);
+      const data = await courseService.updateCourse(req.params.id, req.body, req.user.userId);
       return res.status(200).json(data);
    } catch (error) {
       return res.status(400).json({ message: error.message });
@@ -43,8 +43,8 @@ router.put("/:id", async (req, res) => {
 
 router.delete("/:id", async (req, res) => {
    try {
-      await competitorService.deleteCompetitor(req.params.id, req.user.userId);
-      return res.status(200).json({ message: "Xóa đối thủ thành công." });
+      await courseService.deleteCourse(req.params.id, req.user.userId);
+      return res.status(200).json({ message: "Xóa khóa học thành công." });
    } catch (error) {
       return res.status(400).json({ message: error.message });
    }

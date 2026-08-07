@@ -1,6 +1,6 @@
 import { db } from "../config/firebase.js";
 
-const COLLECTION_NAME = "competitors";
+const COLLECTION_NAME = "my_courses";
 
 export const getAllByUserId = async (userId) => {
    const snapshot = await db.collection(COLLECTION_NAME).where("createdBy", "==", userId).get();
