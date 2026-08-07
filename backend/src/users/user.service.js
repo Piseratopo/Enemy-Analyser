@@ -1,4 +1,5 @@
 import admin from "firebase-admin";
+import * as userRepository from "./user.repository.js";
 
 export const register = async ({ email, password, name }) => {
    try {
@@ -8,6 +9,16 @@ export const register = async ({ email, password, name }) => {
          displayName: name
       });
       
+      try {
+         await userRepository.create({
+            uid: userRecord.uid,
+            email: userRecord.email,
+            name: name || ""
+         });
+      } catch (dbErr) {
+         console.warn("Cảnh báo: Không thể lưu thông tin vào Firestore:", dbErr.message);
+      }
+
       return {
          id: userRecord.uid,
          email: userRecord.email,

@@ -18,3 +18,11 @@ const competitors = [
     country: "China",
   },
 ];
+
+export default function CompetitorList() {
+  return (
+    <div>
+      <h1>Competitor List</h1>
+    </div>
+  );
+}

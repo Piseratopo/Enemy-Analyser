@@ -1,5 +1,6 @@
 import express from "express";
 import cors from "cors";
+import "./config/firebase.js";
 import userController from "./users/user.controller.js";
 import courseController from "./courses/course.controller.js";
 import competitorController from "./competitors/competitor.controller.js";
