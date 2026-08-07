@@ -1,8 +1,6 @@
-import jwt from "jsonwebtoken";
+import admin from "firebase-admin";
 
-const JWT_SECRET = process.env.JWT_SECRET || "fallback_secret";
-
-export const authMiddleware = (req, res, next) => {
+export const authMiddleware = async (req, res, next) => {
    const authHeader = req.headers.authorization;
    
    if (!authHeader || !authHeader.startsWith("Bearer ")) {
@@ -12,10 +10,16 @@ export const authMiddleware = (req, res, next) => {
    const token = authHeader.split(" ")[1];
 
    try {
-      const decoded = jwt.verify(token, JWT_SECRET);
-      req.user = decoded;
+      // Xác minh ID Token bằng Firebase Admin SDK
+      const decodedToken = await admin.auth().verifyIdToken(token);
+      
+      req.user = {
+         userId: decodedToken.uid,
+         email: decodedToken.email
+      };
+      
       next();
    } catch (error) {
-      return res.status(401).json({ message: "Mã xác thực không hợp lệ hoặc đã hết hạn." });
+      return res.status(401).json({ message: "Mã xác thực Firebase không hợp lệ hoặc đã hết hạn." });
    }
 };
