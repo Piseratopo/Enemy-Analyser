@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import "./Register.css";
+import Button from "../components/Button";
 
 export default function Register() {
   return (
@@ -41,9 +42,12 @@ export default function Register() {
             />
           </div>
 
-          <button type="submit">
-            Register
-          </button>
+          <Button
+  type="submit"
+  variant="success"
+>
+  Register
+</Button>
         </form>
 
         <p>

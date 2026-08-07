@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import "./Login.css";
+import Button from "../components/Button";
 
 export default function Login() {
   return (
