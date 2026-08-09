@@ -1,4 +1,5 @@
 import admin from "firebase-admin";
+import * as userRepository from "../users/user.repository.js";
 
 export const authMiddleware = async (req, res, next) => {
    const authHeader = req.headers.authorization;
@@ -13,9 +14,22 @@ export const authMiddleware = async (req, res, next) => {
       // Xác minh ID Token bằng Firebase Admin SDK
       const decodedToken = await admin.auth().verifyIdToken(token);
       
+      // Get user data from Firestore to check isActive and role
+      const user = await userRepository.findById(decodedToken.uid);
+      
+      if (!user) {
+         return res.status(404).json({ message: "Không tìm thấy thông tin người dùng trong hệ thống." });
+      }
+
+      if (!user.isActive) {
+         return res.status(403).json({ message: "Tài khoản đã bị khóa. Vui lòng liên hệ quản trị viên." });
+      }
+      
       req.user = {
          userId: decodedToken.uid,
-         email: decodedToken.email
+         email: decodedToken.email,
+         role: user.role,
+         fullName: user.fullName
       };
       
       next();

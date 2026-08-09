@@ -1,9 +1,9 @@
 import { db } from "../config/firebase.js";
 
-const COLLECTION_NAME = "learner_insights";
+const COLLECTION_NAME = "providers";
 
-export const getAllByUserId = async (userId) => {
-   const snapshot = await db.collection(COLLECTION_NAME).where("createdBy", "==", userId).get();
+export const getAll = async () => {
+   const snapshot = await db.collection(COLLECTION_NAME).get();
    const list = [];
    snapshot.forEach(doc => {
       list.push({ id: doc.id, ...doc.data() });
@@ -19,23 +19,17 @@ export const getById = async (id) => {
 
 export const create = async (data, userId) => {
    const docRef = await db.collection(COLLECTION_NAME).add({
-      learnerGroup: data.learnerGroup || "",
-      userInsight: data.userInsight || "",
-      painPoint: data.painPoint || "",
-      learningNeed: data.learningNeed || "",
+      name: data.name,
+      websiteUrl: data.websiteUrl || "",
       createdBy: userId,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString()
+      createdAt: new Date().toISOString()
    });
    return { id: docRef.id, ...data, createdBy: userId };
 };
 
 export const update = async (id, data) => {
    await db.collection(COLLECTION_NAME).doc(id).update({
-      learnerGroup: data.learnerGroup,
-      userInsight: data.userInsight,
-      painPoint: data.painPoint,
-      learningNeed: data.learningNeed,
+      ...data,
       updatedAt: new Date().toISOString()
    });
    return { id, ...data };

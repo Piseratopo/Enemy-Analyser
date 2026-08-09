@@ -1,39 +1,43 @@
 import * as courseRepository from "./course.repository.js";
 
+export const getAllCourses = async () => {
+   return await courseRepository.getAll();
+};
+
 export const getCoursesByUserId = async (userId) => {
    return await courseRepository.getAllByUserId(userId);
 };
 
 export const getCourseById = async (id, userId) => {
    const course = await courseRepository.getById(id);
-   if (!course || course.createdBy !== userId) {
-      throw new Error("Không tìm thấy khóa học hoặc thiếu quyền truy cập.");
+   if (!course) {
+      throw new Error("Không tìm thấy khóa học.");
    }
    return course;
 };
 
 export const createCourse = async (data, userId) => {
-   if (!data.name) {
-      throw new Error("Tên khóa học là bắt buộc.");
+   if (!data.title) {
+      throw new Error("Tiêu đề khóa học là bắt buộc.");
    }
    return await courseRepository.create(data, userId);
 };
 
 export const updateCourse = async (id, data, userId) => {
    const course = await courseRepository.getById(id);
-   if (!course || course.createdBy !== userId) {
-      throw new Error("Không tìm thấy khóa học để cập nhật hoặc thiếu quyền truy cập.");
+   if (!course) {
+      throw new Error("Không tìm thấy khóa học để cập nhật.");
    }
-   if (!data.name) {
-      throw new Error("Tên khóa học không được để trống.");
+   if (!data.title) {
+      throw new Error("Tiêu đề khóa học không được để trống.");
    }
-   return await courseRepository.update(id, data);
+   return await courseRepository.update(id, data, userId);
 };
 
 export const deleteCourse = async (id, userId) => {
    const course = await courseRepository.getById(id);
-   if (!course || course.createdBy !== userId) {
-      throw new Error("Không tìm thấy khóa học để xóa hoặc thiếu quyền truy cập.");
+   if (!course) {
+      throw new Error("Không tìm thấy khóa học để xóa.");
    }
    return await courseRepository.deleteById(id);
 };
