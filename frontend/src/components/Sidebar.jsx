@@ -7,7 +7,7 @@ export default function Sidebar() {
       <h2>Enemy Analyser</h2>
 
       <ul>
-        <li><Link to="/dashboard">Dashboard</Link></li>
+        <li><Link to="/dashboard">Bảng điều khiển</Link></li>
         <li><Link to="/providers">Đơn vị đào tạo</Link></li>
         <li><Link to="/compare">So sánh khóa học</Link></li>
       </ul>

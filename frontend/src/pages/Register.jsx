@@ -37,17 +37,17 @@ export default function Register() {
   return (
     <div className="register-container">
       <div className="register-card">
-        <h1>Create Account</h1>
-        <p>Create a new account</p>
+        <h1>Tạo tài khoản</h1>
+        <p>Đăng ký tài khoản mới</p>
 
         {error && <p style={{ color: "#ef4444", marginBottom: "1rem" }}>{error}</p>}
 
         <form onSubmit={handleSubmit}>
           <div className="form-group">
-            <label>Name</label>
+            <label>Họ tên</label>
             <input
               type="text"
-              placeholder="Enter your name"
+              placeholder="Nhập họ tên của bạn"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
@@ -58,7 +58,7 @@ export default function Register() {
             <label>Email</label>
             <input
               type="email"
-              placeholder="Enter email"
+              placeholder="Nhập email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -66,10 +66,10 @@ export default function Register() {
           </div>
 
           <div className="form-group">
-            <label>Password</label>
+            <label>Mật khẩu</label>
             <input
               type="password"
-              placeholder="Enter password"
+              placeholder="Nhập mật khẩu"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -77,10 +77,10 @@ export default function Register() {
           </div>
 
           <div className="form-group">
-            <label>Confirm Password</label>
+            <label>Xác nhận mật khẩu</label>
             <input
               type="password"
-              placeholder="Confirm password"
+              placeholder="Xác nhận mật khẩu"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               required
@@ -88,13 +88,13 @@ export default function Register() {
           </div>
 
           <button type="submit" disabled={loading}>
-            {loading ? "Registering..." : "Register"}
+            {loading ? "Đang đăng ký..." : "Đăng ký"}
           </button>
         </form>
 
         <p>
-          Already have an account?{" "}
-          <Link to="/">Login</Link>
+          Đã có tài khoản?{" "}
+          <Link to="/">Đăng nhập</Link>
         </p>
       </div>
     </div>

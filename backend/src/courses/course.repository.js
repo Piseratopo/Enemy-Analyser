@@ -39,6 +39,7 @@ export const create = async (data, userId) => {
       maxFee: data.maxFee || 0,
       strengths: data.strengths || [],
       weaknesses: data.weaknesses || [],
+      insights: data.insights || [],
       sourceUrl: data.sourceUrl || "",
       createdBy: userId,
       createdAt: new Date().toISOString(),

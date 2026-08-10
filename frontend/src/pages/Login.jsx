@@ -33,7 +33,7 @@ export default function Login() {
     <div className="login-container">
       <div className="login-card">
         <h1>Enemy Analyser</h1>
-        <p>Sign in to continue</p>
+        <p>Đăng nhập để tiếp tục</p>
 
         {error && <p style={{ color: "#ef4444", marginBottom: "1rem" }}>{error}</p>}
 
@@ -42,7 +42,7 @@ export default function Login() {
             <label>Email</label>
             <input
               type="email"
-              placeholder="Enter your email"
+              placeholder="Nhập email của bạn"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
@@ -50,10 +50,10 @@ export default function Login() {
           </div>
 
           <div className="form-group">
-            <label>Password</label>
+            <label>Mật khẩu</label>
             <input
               type="password"
-              placeholder="Enter your password"
+              placeholder="Nhập mật khẩu"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
@@ -61,13 +61,13 @@ export default function Login() {
           </div>
 
           <button type="submit" disabled={loading}>
-            {loading ? "Logging in..." : "Login"}
+            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
           </button>
         </form>
 
         <p className="register-link">
-          Don't have an account?{" "}
-          <Link to="/register">Register</Link>
+          Chưa có tài khoản?{" "}
+          <Link to="/register">Đăng ký</Link>
         </p>
       </div>
     </div>
