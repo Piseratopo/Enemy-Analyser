@@ -8,8 +8,8 @@ export default function Sidebar() {
 
       <ul>
         <li><Link to="/dashboard">Dashboard</Link></li>
-        <li><Link to="/competitors">Competitors</Link></li>
-        <li><Link to="/compare">Compare</Link></li>
+        <li><Link to="/providers">Đơn vị đào tạo</Link></li>
+        <li><Link to="/compare">So sánh khóa học</Link></li>
       </ul>
 
     </aside>
