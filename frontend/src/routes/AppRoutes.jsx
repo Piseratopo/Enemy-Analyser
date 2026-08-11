@@ -7,6 +7,7 @@ import Dashboard from "../pages/Dashboard";
 import ProviderList from "../pages/ProviderList";
 import Compare from "../pages/Compare";
 import AddCourse from "../pages/AddCourse";
+import EditCourse from "../pages/EditCourse";
 import CourseList from "../pages/CourseList";
 
 function ProtectedRoute({ children }) {
@@ -89,6 +90,14 @@ export default function AppRoutes() {
             element={
               <ProtectedRoute>
                 <AddCourse />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/courses/edit/:id"
+            element={
+              <ProtectedRoute>
+                <EditCourse />
               </ProtectedRoute>
             }
           />

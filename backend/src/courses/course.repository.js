@@ -30,6 +30,7 @@ export const create = async (data, userId) => {
    const docRef = await db.collection(COLLECTION_NAME).add({
       title: data.title,
       provider: data.provider || null,
+      providerId: data.providerId || null,
       toolCombo: data.toolCombo || [],
       targetAudience: data.targetAudience || [],
       durationDisplay: data.durationDisplay || "",

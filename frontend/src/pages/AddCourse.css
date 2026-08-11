@@ -1,13 +1,317 @@
-.add-course {
-  padding: 2rem;
-}
+/* =============================================
+   AddCourse – premium form matching template
+   ============================================= */
 
-.form-actions {
+.ac-page {
   display: flex;
-  gap: 1rem;
-  margin-top: 2rem;
+  flex-direction: column;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px;
+  gap: 32px;
+  font-family: 'Inter', sans-serif;
 }
 
-.form-actions .btn {
+/* ── Page header ─────────────────────────────── */
+.ac-page-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ac-page-title {
+  font-size: 32px;
+  font-weight: 700;
+  color: #191c1e;
+  margin: 0;
+  letter-spacing: -0.02em;
+  line-height: 40px;
+}
+
+.ac-page-subtitle {
+  font-size: 16px;
+  font-weight: 400;
+  color: #64748B;
+  margin: 0;
+  line-height: 24px;
+}
+
+/* ── Error banner ────────────────────────────── */
+.ac-error {
+  background: #ffdad6;
+  color: #ba1a1a;
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* ── Form card ───────────────────────────────── */
+.ac-form {
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 1px 6px rgba(0,0,0,0.06);
+  padding: 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ── Section ─────────────────────────────────── */
+.ac-section {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ac-section-title {
+  font-size: 20px;
+  font-weight: 600;
+  color: #003d9b;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  line-height: 28px;
+}
+
+.ac-section-title .material-symbols-outlined {
+  font-size: 22px;
+}
+
+.ac-divider {
+  height: 1px;
+  background: #e6e8ea;
+  width: 100%;
+  border: none;
+  margin: 0;
+}
+
+/* ── Grid ────────────────────────────────────── */
+.ac-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.ac-grid .ac-field.full {
+  grid-column: 1 / -1;
+}
+
+.ac-grid-3 {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 20px;
+}
+
+@media (max-width: 720px) {
+  .ac-grid,
+  .ac-grid-3 {
+    grid-template-columns: 1fr;
+  }
+  .ac-grid .ac-field.full {
+    grid-column: auto;
+  }
+}
+
+/* ── Field ───────────────────────────────────── */
+.ac-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.ac-label {
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: #434654;
+}
+
+.ac-label.tertiary {
+  color: #004e33;
+}
+
+.ac-input,
+.ac-select,
+.ac-textarea {
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #191c1e;
+  background: #f2f4f6;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+  box-sizing: border-box;
+  width: 100%;
+}
+
+.ac-input,
+.ac-select {
+  height: 40px;
+  padding: 0 14px;
+}
+
+.ac-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23737685' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+.ac-textarea {
+  padding: 12px 14px;
+  resize: vertical;
+  min-height: 96px;
+  line-height: 20px;
+}
+
+.ac-input::placeholder,
+.ac-textarea::placeholder {
+  color: rgba(100, 116, 139, 0.55);
+}
+
+.ac-input:focus,
+.ac-select:focus,
+.ac-textarea:focus {
+  border-color: rgba(0, 61, 155, 0.4);
+  box-shadow: 0 0 0 3px rgba(0, 61, 155, 0.08);
+  background: #ffffff;
+}
+
+/* ── Tags input ──────────────────────────────── */
+.ac-tags-wrap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 8px 10px;
+  background: #f2f4f6;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  min-height: 48px;
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.ac-tags-wrap:focus-within {
+  border-color: rgba(0, 61, 155, 0.4);
+  box-shadow: 0 0 0 3px rgba(0, 61, 155, 0.08);
+  background: #ffffff;
+}
+
+.ac-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 10px 3px 12px;
+  background: #dae2ff;
+  color: #001848;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.ac-tag-remove {
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  width: auto;
+  height: auto;
+  box-shadow: none;
+  border-radius: 0;
+  opacity: 0.7;
+  transition: opacity 0.15s;
+}
+
+.ac-tag-remove:hover {
+  opacity: 1;
+  background: none;
+}
+
+.ac-tag-remove .material-symbols-outlined {
+  font-size: 15px;
+}
+
+.ac-tag-input {
+  background: transparent;
+  border: none;
+  outline: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  color: #191c1e;
+  min-width: 140px;
   flex: 1;
+}
+
+.ac-tag-input::placeholder {
+  color: rgba(100, 116, 139, 0.55);
+}
+
+/* ── Form actions ────────────────────────────── */
+.ac-actions {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  gap: 14px;
+  padding-top: 16px;
+  margin-top: 8px;
+  border-top: 1px solid #e6e8ea;
+}
+
+.ac-btn-cancel {
+  padding: 0 20px;
+  height: 38px;
+  border: none;
+  background: transparent;
+  color: #505f76;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  width: auto;
+  box-shadow: none;
+}
+
+.ac-btn-cancel:hover {
+  background: #eceef0;
+}
+
+.ac-btn-submit {
+  padding: 0 24px;
+  height: 38px;
+  border: none;
+  background: #003d9b;
+  color: #ffffff;
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  width: auto;
+  box-shadow: 0 2px 8px rgba(0, 61, 155, 0.2);
+}
+
+.ac-btn-submit:hover:not(:disabled) {
+  background: #0747A6;
+}
+
+.ac-btn-submit:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
 }

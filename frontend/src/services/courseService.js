@@ -10,6 +10,16 @@ export const getAllCourses = async () => {
   }
 };
 
+export const getCourseById = async (id) => {
+  try {
+    const response = await api.get(`/api/courses/${id}`);
+    return response.data;
+  } catch (error) {
+    const message = error.response?.data?.message || "Không thể tải thông tin khóa học.";
+    throw new Error(message);
+  }
+};
+
 export const createCourse = async (data) => {
   try {
     const response = await api.post("/api/courses", data);
