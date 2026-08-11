@@ -1,63 +1,87 @@
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #f4f6f9;
-}
+/* =============================================
+   Register Page – shares auth-page design system
+   Additional register-specific styles only
+   ============================================= */
+@import "./Login.css";
 
-.login-container {
+/* Password strength bar */
+.auth-strength-bars {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 100vh;
+  gap: 4px;
+  margin-top: 8px;
 }
 
-.login-card {
-  width: 360px;
-  padding: 30px;
-  background: white;
-  border-radius: 12px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+.auth-strength-bar {
+  flex: 1;
+  height: 4px;
+  border-radius: 999px;
+  background: #E2E8F0;
+  overflow: hidden;
 }
 
-.login-card h1 {
-  text-align: center;
-  margin-bottom: 10px;
+.auth-strength-fill {
+  height: 100%;
+  border-radius: 999px;
+  transition: width 0.3s ease, background-color 0.3s ease;
 }
 
-.login-card p {
-  text-align: center;
-  color: gray;
-}
-
-.form-group {
-  margin-top: 18px;
-}
-
-.form-group label {
-  display: block;
-  margin-bottom: 6px;
-}
-
-.form-group input {
-  width: 100%;
-  padding: 10px;
-  box-sizing: border-box;
-}
-
-button {
-  width: 100%;
-  padding: 12px;
+/* Toggle password visibility button */
+.auth-eye-btn {
+  position: absolute;
+  right: 12px;
+  background: none;
   border: none;
-  background: #2563eb;
-  color: white;
-  border-radius: 6px;
   cursor: pointer;
+  color: var(--outline, #737685);
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.2s;
+  width: auto;
+  height: auto;
+  border-radius: 4px;
+  box-shadow: none;
 }
 
-button:hover {
-  background: #1d4ed8;
+.auth-eye-btn:hover {
+  color: #1E293B;
+  background: none;
 }
 
-.register-link {
-  margin-top: 20px;
+.auth-eye-btn .material-symbols-outlined {
+  font-size: 20px;
+}
+
+/* Checkbox + terms */
+.auth-terms {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.auth-terms input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin-top: 2px;
+  accent-color: var(--primary, #003d9b);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.auth-terms-label {
+  font-family: 'Inter', sans-serif;
+  font-size: 12px;
+  color: var(--text-muted, #64748B);
+  line-height: 1.5;
+}
+
+.auth-terms-label a {
+  font-weight: 600;
+  color: var(--primary, #003d9b);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+
+.auth-terms-label a:hover {
+  color: #0747A6;
 }

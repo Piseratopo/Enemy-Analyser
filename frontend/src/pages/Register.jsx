@@ -1,16 +1,31 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 import "./Register.css";
+
+/* Password strength: returns [level 0-4, color] */
+function calcStrength(val) {
+  if (!val) return [0, "transparent"];
+  let s = 1;
+  if (val.length > 5) s = 2;
+  if (val.length > 7 && /[A-Z]/.test(val) && /[0-9]/.test(val)) s = 3;
+  if (val.length > 9 && /[!@#$%^&*]/.test(val)) s = 4;
+  const colors = ["transparent", "#ba1a1a", "#facc15", "#22c55e", "#4edea3"];
+  return [s, colors[s]];
+}
 
 export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { registerUser } = useAuth();
   const navigate = useNavigate();
+
+  const [strength, strengthColor] = calcStrength(password);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -22,80 +37,172 @@ export default function Register() {
     }
 
     setLoading(true);
-
     try {
-      await api.post("/api/users/register", { name, email, password });
+      await registerUser({ name, email, password });
       alert("Đăng ký tài khoản thành công!");
       navigate("/");
     } catch (err) {
-      setError(err.response?.data?.message || "Đăng ký thất bại. Vui lòng thử lại!");
+      setError(err.message || "Đăng ký thất bại. Vui lòng thử lại!");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="register-container">
-      <div className="register-card">
-        <h1>Tạo tài khoản</h1>
-        <p>Đăng ký tài khoản mới</p>
+    <div className="auth-page">
+      {/* Decorative blobs */}
+      <div className="auth-blob-1" />
+      <div className="auth-blob-2" />
 
-        {error && <p style={{ color: "#ef4444", marginBottom: "1rem" }}>{error}</p>}
+      <div className="auth-card">
+        {/* Header */}
+        <div className="auth-logo-wrap">
+          <img
+            src="https://lh3.googleusercontent.com/aida/AP1WRLvl3TylLX5tEdiJSMfmr6ugm9QtJ4lcdcr4uSuYyrTf6VSE955XaAlGeJVRgB8oSABumCkH-dZkcNQnSZsfpSCNmZmRDeeGaTEUVCBJPTEmW9KaI_V4Fwtl4pGOYIBNQwKelMpCU-7BF9-HcrD5JrGLZcxlHPp4c-JL4AaG4u4F5T2Wt8hXoNc0wTqCJ8pRyfgG6nMihc_x2246zk-8GqW-FkyKaoVw-K7lzAop5DcB06pQA6KhunDO9u0"
+            alt="Course Analyser Logo"
+          />
+          <h1 className="auth-title">Create an Account</h1>
+          <p className="auth-subtitle">Join Course Analyser to start tracking competitors.</p>
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Họ tên</label>
-            <input
-              type="text"
-              placeholder="Nhập họ tên của bạn"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-            />
+        {/* Error banner */}
+        {error && (
+          <div className="auth-error" style={{ width: "100%", marginBottom: "4px" }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>error</span>
+            {error}
+          </div>
+        )}
+
+        {/* Form */}
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {/* Full Name */}
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="fullName">Full Name</label>
+            <div className="auth-input-wrap">
+              <span className="material-symbols-outlined">person</span>
+              <input
+                id="fullName"
+                className="auth-input"
+                type="text"
+                placeholder="John Doe"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              placeholder="Nhập email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+          {/* Email */}
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="email">Email Address</label>
+            <div className="auth-input-wrap">
+              <span className="material-symbols-outlined">mail</span>
+              <input
+                id="email"
+                className="auth-input"
+                type="email"
+                placeholder="name@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Mật khẩu</label>
-            <input
-              type="password"
-              placeholder="Nhập mật khẩu"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+          {/* Password + strength */}
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="password">Password</label>
+            <div className="auth-input-wrap">
+              <span className="material-symbols-outlined">lock</span>
+              <input
+                id="password"
+                className="auth-input"
+                style={{ paddingRight: 44 }}
+                type={showPassword ? "text" : "password"}
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+              <button
+                type="button"
+                className="auth-eye-btn"
+                onClick={() => setShowPassword((v) => !v)}
+                aria-label="Toggle password visibility"
+              >
+                <span className="material-symbols-outlined">
+                  {showPassword ? "visibility_off" : "visibility"}
+                </span>
+              </button>
+            </div>
+
+            {/* Strength bars */}
+            <div className="auth-strength-bars">
+              {[1, 2, 3, 4].map((level) => (
+                <div className="auth-strength-bar" key={level}>
+                  <div
+                    className="auth-strength-fill"
+                    style={{
+                      width: strength >= level ? "100%" : "0%",
+                      backgroundColor: strength >= level ? strengthColor : "transparent",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Xác nhận mật khẩu</label>
-            <input
-              type="password"
-              placeholder="Xác nhận mật khẩu"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-            />
+          {/* Confirm Password */}
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="confirmPassword">Confirm Password</label>
+            <div className="auth-input-wrap">
+              <span className="material-symbols-outlined">lock_reset</span>
+              <input
+                id="confirmPassword"
+                className="auth-input"
+                type="password"
+                placeholder="••••••••"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                required
+              />
+            </div>
           </div>
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Đang đăng ký..." : "Đăng ký"}
+          {/* Terms */}
+          <div className="auth-terms">
+            <input id="terms" type="checkbox" required />
+            <label className="auth-terms-label" htmlFor="terms">
+              I agree to the{" "}
+              <a href="#">Terms of Service</a>{" "}
+              and{" "}
+              <a href="#">Privacy Policy</a>.
+            </label>
+          </div>
+
+          {/* Submit */}
+          <button className="auth-btn" type="submit" disabled={loading}>
+            <span>{loading ? "Creating account..." : "Đăng ký"}</span>
+            {!loading && <span className="material-symbols-outlined">arrow_forward</span>}
           </button>
         </form>
 
-        <p>
-          Đã có tài khoản?{" "}
-          <Link to="/">Đăng nhập</Link>
-        </p>
+        {/* Footer */}
+        <div className="auth-footer">
+          <p>
+            Already have an account?
+            <Link to="/">
+              Đăng nhập
+              <span className="material-symbols-outlined">login</span>
+            </Link>
+          </p>
+        </div>
+      </div>
+
+      {/* Security badge */}
+      <div className="auth-badge">
+        <span className="material-symbols-outlined">verified_user</span>
+        <span>Enterprise Grade Security</span>
       </div>
     </div>
   );

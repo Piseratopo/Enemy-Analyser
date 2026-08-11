@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import api from "../api/axios";
+import { useAuth } from "../context/AuthContext";
 import "./Login.css";
 
 export default function Login() {
@@ -8,6 +8,7 @@ export default function Login() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const { loginUser } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -16,59 +17,102 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await api.post("/api/users/login", { email, password });
-      if (res.data.token) {
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
-        navigate("/dashboard");
-      }
+      await loginUser({ email, password });
+      navigate("/dashboard");
     } catch (err) {
-      setError(err.response?.data?.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại!");
+      setError(err.response?.data?.message || err.message || "Đăng nhập thất bại. Vui lòng kiểm tra lại!");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="login-container">
-      <div className="login-card">
-        <h1>Enemy Analyser</h1>
-        <p>Đăng nhập để tiếp tục</p>
+    <div className="auth-page">
+      {/* Decorative blobs */}
+      <div className="auth-blob-1" />
+      <div className="auth-blob-2" />
 
-        {error && <p style={{ color: "#ef4444", marginBottom: "1rem" }}>{error}</p>}
+      <div className="auth-card">
+        {/* Header */}
+        <div className="auth-logo-wrap">
+          <img
+            src="https://lh3.googleusercontent.com/aida/AP1WRLvl3TylLX5tEdiJSMfmr6ugm9QtJ4lcdcr4uSuYyrTf6VSE955XaAlGeJVRgB8oSABumCkH-dZkcNQnSZsfpSCNmZmRDeeGaTEUVCBJPTEmW9KaI_V4Fwtl4pGOYIBNQwKelMpCU-7BF9-HcrD5JrGLZcxlHPp4c-JL4AaG4u4F5T2Wt8hXoNc0wTqCJ8pRyfgG6nMihc_x2246zk-8GqW-FkyKaoVw-K7lzAop5DcB06pQA6KhunDO9u0"
+            alt="Course Analyser Logo"
+          />
+          <h1 className="auth-title">Course Analyser</h1>
+          <p className="auth-subtitle">Welcome back. Please log in to your account.</p>
+        </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Email</label>
-            <input
-              type="email"
-              placeholder="Nhập email của bạn"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
+        {/* Error banner */}
+        {error && (
+          <div className="auth-error" style={{ width: "100%", marginBottom: "4px" }}>
+            <span className="material-symbols-outlined" style={{ fontSize: 18 }}>error</span>
+            {error}
+          </div>
+        )}
+
+        {/* Form */}
+        <form className="auth-form" onSubmit={handleSubmit}>
+          {/* Email */}
+          <div className="auth-field">
+            <label className="auth-label" htmlFor="email">Email</label>
+            <div className="auth-input-wrap">
+              <span className="material-symbols-outlined">mail</span>
+              <input
+                id="email"
+                className="auth-input"
+                type="email"
+                placeholder="name@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </div>
           </div>
 
-          <div className="form-group">
-            <label>Mật khẩu</label>
-            <input
-              type="password"
-              placeholder="Nhập mật khẩu"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
+          {/* Password */}
+          <div className="auth-field">
+            <div className="auth-field-header">
+              <label className="auth-label" htmlFor="password">Password</label>
+              <a className="auth-forgot" href="#">Forgot Password?</a>
+            </div>
+            <div className="auth-input-wrap">
+              <span className="material-symbols-outlined">lock</span>
+              <input
+                id="password"
+                className="auth-input"
+                type="password"
+                placeholder="••••••••"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </div>
           </div>
 
-          <button type="submit" disabled={loading}>
-            {loading ? "Đang đăng nhập..." : "Đăng nhập"}
+          {/* Submit */}
+          <button className="auth-btn" type="submit" disabled={loading}>
+            <span>{loading ? "Đang đăng nhập..." : "Đăng nhập"}</span>
+            {!loading && <span className="material-symbols-outlined">login</span>}
           </button>
         </form>
 
-        <p className="register-link">
-          Chưa có tài khoản?{" "}
-          <Link to="/register">Đăng ký</Link>
-        </p>
+        {/* Footer */}
+        <div className="auth-footer">
+          <p>
+            Don't have an account?
+            <Link to="/register">
+              Đăng ký ngay
+              <span className="material-symbols-outlined">arrow_forward</span>
+            </Link>
+          </p>
+        </div>
+      </div>
+
+      {/* Security badge */}
+      <div className="auth-badge">
+        <span className="material-symbols-outlined">verified_user</span>
+        <span>Secure Internal Access</span>
       </div>
     </div>
   );

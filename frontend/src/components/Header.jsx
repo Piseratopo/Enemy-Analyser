@@ -5,11 +5,25 @@ export default function Header() {
     
     return (
       <header className="header">
-        <h3>Enemy Analyser</h3>
+        <div className="search-container">
+          <span className="material-symbols-outlined search-icon">search</span>
+          <input 
+            type="text" 
+            className="search-input" 
+            placeholder="Tìm kiếm khóa học, đơn vị đào tạo..."
+          />
+        </div>
   
-        <div className="user-info">
-          <span>{user?.fullName || "Người dùng"}</span>
-          <button onClick={logout} className="logout-btn">Đăng xuất</button>
+        <div className="header-actions">
+          <button className="header-btn" title="Thông báo">
+            <span className="material-symbols-outlined">notifications</span>
+          </button>
+          <button className="header-btn" title="Cài đặt">
+            <span className="material-symbols-outlined">settings</span>
+          </button>
+          <button className="header-btn" onClick={logout} title="Đăng xuất">
+            <span className="material-symbols-outlined">logout</span>
+          </button>
         </div>
       </header>
     );

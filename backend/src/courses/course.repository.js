@@ -40,20 +40,23 @@ export const create = async (data, userId) => {
       strengths: data.strengths || [],
       weaknesses: data.weaknesses || [],
       insights: data.insights || [],
+      salesVolume: data.salesVolume || "",
       sourceUrl: data.sourceUrl || "",
       createdBy: userId,
+      updatedBy: userId,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString()
    });
-   return { id: docRef.id, ...data, createdBy: userId };
+   return { id: docRef.id, ...data, createdBy: userId, updatedBy: userId };
 };
 
 export const update = async (id, data, userId) => {
-   await db.collection(COLLECTION_NAME).doc(id).update({
+   const updateData = {
       ...data,
       updatedBy: userId,
       updatedAt: new Date().toISOString()
-   });
+   };
+   await db.collection(COLLECTION_NAME).doc(id).update(updateData);
    return { id, ...data };
 };
 

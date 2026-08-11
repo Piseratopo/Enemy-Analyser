@@ -1,0 +1,550 @@
+.course-list {
+  padding: 24px 32px;
+}
+
+.course-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 32px;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.course-title-section {
+  flex: 1;
+  max-width: 800px;
+}
+
+.course-title-section h1 {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--on-surface);
+  margin: 0 0 8px 0;
+  letter-spacing: -0.02em;
+  line-height: 40px;
+}
+
+.course-title-section p {
+  font-size: 14px;
+  color: var(--on-surface-variant);
+  margin: 0;
+  max-width: 600px;
+  line-height: 20px;
+}
+
+.course-actions {
+  display: flex;
+  gap: 12px;
+}
+
+.course-actions .btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 16px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.course-actions .btn-primary {
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: 0 4px 6px -1px rgba(0, 61, 155, 0.2);
+}
+
+.course-actions .btn-primary:hover {
+  background: var(--primary-dark);
+  box-shadow: 0 6px 8px -1px rgba(0, 61, 155, 0.3);
+  transform: translateY(-2px);
+}
+
+.course-actions .btn-secondary {
+  background: var(--surface-container);
+  color: var(--on-surface);
+}
+
+.course-actions .btn-secondary:hover {
+  background: var(--surface-container-low);
+}
+
+.filter-bar {
+  background: var(--surface-container-lowest);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  padding: 16px;
+  margin-bottom: 24px;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.filter-bar::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(0, 61, 155, 0.05) 0%, transparent 50%, transparent 100%);
+  opacity: 0.5;
+  pointer-events: none;
+}
+
+.filter-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-right: 16px;
+  border-right: 1px solid var(--border-subtle);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--on-surface);
+  flex-shrink: 0;
+}
+
+.filter-header .material-symbols-outlined {
+  font-size: 20px;
+  color: var(--primary);
+}
+
+.filter-pills {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  position: relative;
+}
+
+.filter-pill {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: none;
+  background: var(--surface-container-low);
+  color: var(--on-surface-variant);
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-pill:hover {
+  background: var(--surface-container);
+  color: var(--on-surface);
+}
+
+.filter-pill.active {
+  background: rgba(0, 61, 155, 0.1);
+  color: var(--primary);
+}
+
+.filter-pill .material-symbols-outlined {
+  font-size: 16px;
+}
+
+.filter-clear {
+  margin-left: auto;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--on-surface-variant);
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.filter-clear:hover {
+  background: var(--surface-container-low);
+}
+
+.course-table-container {
+  background: var(--surface-container-lowest);
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.course-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.course-table thead {
+  background: rgba(236, 238, 240, 0.5);
+}
+
+.course-table th {
+  padding: 12px 16px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  color: var(--on-surface-variant);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.course-table th.checkbox-col {
+  width: 48px;
+  position: sticky;
+  left: 0;
+  background: rgba(236, 238, 240, 0.95);
+  backdrop-filter: blur(4px);
+  z-index: 10;
+}
+
+.course-table th.actions-col {
+  text-align: right;
+}
+
+.course-table tbody {
+  font-size: 14px;
+  color: var(--on-surface);
+}
+
+.course-row {
+  border-bottom: 1px solid rgba(226, 232, 240, 0.5);
+  transition: background 0.2s;
+}
+
+.course-row:hover {
+  background: rgba(242, 244, 246, 0.5);
+}
+
+.course-row td {
+  padding: 12px 16px;
+  vertical-align: middle;
+}
+
+.course-row td.checkbox-col {
+  position: sticky;
+  left: 0;
+  background: var(--surface-container-lowest);
+  transition: background 0.2s;
+}
+
+.course-row:hover td.checkbox-col {
+  background: rgba(242, 244, 246, 0.5);
+}
+
+.checkbox-label {
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.checkbox-label input {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.checkbox-custom {
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--outline-variant);
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+}
+
+.checkbox-label input:checked + .checkbox-custom {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.checkbox-label input:checked + .checkbox-custom::after {
+  content: '✓';
+  color: var(--on-primary);
+  font-size: 12px;
+  font-weight: bold;
+}
+
+.course-title-cell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.course-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: rgba(0, 61, 155, 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.course-icon .material-symbols-outlined {
+  font-size: 16px;
+  color: var(--primary);
+}
+
+.course-title-content {
+  flex: 1;
+}
+
+.course-name {
+  font-weight: 500;
+  color: var(--on-surface);
+  margin-bottom: 2px;
+}
+
+.course-tags {
+  display: flex;
+  gap: 4px;
+  flex-wrap: wrap;
+}
+
+.course-tag {
+  font-size: 11px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  background: var(--surface-container);
+  color: var(--on-surface-variant);
+}
+
+.course-fee {
+  font-family: 'Inter', monospace;
+  font-weight: 500;
+}
+
+.format-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.format-badge .material-symbols-outlined {
+  font-size: 14px;
+}
+
+/* Format badge colors */
+.format-badge.bg-surface-variant {
+  background: var(--surface-variant);
+  color: var(--on-surface-variant);
+}
+
+.format-badge.bg-tertiary-container\/20 {
+  background: rgba(0, 78, 51, 0.2);
+  color: var(--tertiary);
+}
+
+.format-badge.bg-secondary-container\/50 {
+  background: rgba(208, 225, 251, 0.5);
+  color: #0b1c30;
+}
+
+.actions-col {
+  text-align: right;
+}
+
+.action-btn {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  opacity: 0;
+}
+
+.course-row:hover .action-btn {
+  opacity: 1;
+}
+
+.action-btn:hover {
+  background: rgba(0, 61, 155, 0.1);
+  color: var(--primary);
+}
+
+.empty-state {
+  text-align: center;
+  padding: 48px;
+  color: var(--on-surface-variant);
+}
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px;
+  border-top: 1px solid var(--border-subtle);
+  background: var(--surface-container-lowest);
+}
+
+.pagination-info {
+  font-size: 14px;
+  color: var(--on-surface-variant);
+}
+
+.pagination-controls {
+  display: flex;
+  gap: 4px;
+}
+
+.pagination-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  border: none;
+  background: transparent;
+  color: var(--on-surface-variant);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.pagination-btn:hover:not(:disabled) {
+  background: var(--surface-container);
+  color: var(--on-surface);
+}
+
+.pagination-btn.active {
+  background: rgba(0, 61, 155, 0.1);
+  color: var(--primary);
+}
+
+.pagination-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.pagination-ellipsis {
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--on-surface-variant);
+}
+
+.action-bar {
+  position: fixed;
+  bottom: 32px;
+  left: 50%;
+  transform: translateX(-50%) translateY(0);
+  margin-left: 144px;
+  background: var(--surface-container-lowest);
+  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+  border: 1px solid var(--border-subtle);
+  border-radius: 9999px;
+  padding: 12px 24px;
+  z-index: 50;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateX(-50%) translateY(100px);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+}
+
+.action-bar-content {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.selected-count {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.count-badge {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: rgba(0, 61, 155, 0.1);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+}
+
+.selected-count span {
+  font-size: 14px;
+  color: var(--on-surface);
+  font-weight: 500;
+}
+
+.action-bar-divider {
+  width: 1px;
+  height: 24px;
+  background: var(--border-subtle);
+}
+
+.action-bar .btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  height: 40px;
+  padding: 0 24px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.05em;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--primary);
+  color: var(--on-primary);
+  box-shadow: 0 4px 6px -1px rgba(0, 61, 155, 0.2);
+}
+
+.action-bar .btn:hover {
+  background: var(--primary-dark);
+  box-shadow: 0 6px 8px -1px rgba(0, 61, 155, 0.3);
+  transform: scale(1.05);
+}
+
+.loading {
+  text-align: center;
+  padding: 32px;
+  color: var(--on-surface-variant);
+  font-size: 14px;
+}
