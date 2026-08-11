@@ -12,6 +12,7 @@
   font-family: 'Inter', sans-serif;
   color: #191c1e;
   padding: 0 0 32px;
+  overflow: hidden;
 }
 
 /* Decorative blobs */

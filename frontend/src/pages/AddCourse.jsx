@@ -320,7 +320,7 @@ export default function AddCourse() {
                   name="strengths"
                   value={formData.strengths}
                   onChange={handleChange}
-                  placeholder={"- Giảng viên giàu kinh nghiệm\n- Hỗ trợ việc làm"}
+                  placeholder="Giảng viên giàu kinh nghiệm, Hỗ trợ việc làm"
                   rows={4}
                 />
               </div>
@@ -334,7 +334,7 @@ export default function AddCourse() {
                   name="weaknesses"
                   value={formData.weaknesses}
                   onChange={handleChange}
-                  placeholder={"- Học phí cao\n- Lịch học không linh hoạt"}
+                  placeholder="Học phí cao, Lịch học không linh hoạt"
                   rows={4}
                 />
               </div>

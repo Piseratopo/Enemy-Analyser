@@ -88,10 +88,6 @@ export default function ProviderList() {
         {/* ── Header ── */}
         <div className="provider-header">
           <div className="provider-header-left">
-            <div className="provider-eyebrow">
-              <span className="provider-eyebrow-text">Ecosystem</span>
-              <div className="provider-eyebrow-line" />
-            </div>
             <h1 className="provider-title">Đơn vị đào tạo</h1>
             <p className="provider-subtitle">
               Quản lý và theo dõi các tổ chức đào tạo đối thủ trên thị trường.

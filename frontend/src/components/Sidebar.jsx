@@ -45,9 +45,12 @@ export default function Sidebar() {
             <span className="material-symbols-outlined" style={{ fontSize: 18 }}>person</span>
           </div>
           <div className="user-info-text">
-            <p className="user-name">{user?.fullName || "Người dùng"}</p>
+            <p className="user-name">{user?.fullName || user?.name || "Người dùng"}</p>
             <p className="user-role">{user?.role || "Staff"}</p>
           </div>
+          <button className="sidebar-logout-btn" onClick={logout} title="Đăng xuất">
+            <span className="material-symbols-outlined">logout</span>
+          </button>
         </div>
       </div>
     </aside>
