@@ -147,45 +147,37 @@ function Compare() {
     },
   });
 
-  const handleRunAiComparison = (itemAOverride, itemBOverride) => {
-    let itemA = typeof itemAOverride === "string" ? itemAOverride : null;
-    let itemB = typeof itemBOverride === "string" ? itemBOverride : null;
-
-    if (!itemA || !itemB) {
-      if (selectedCourses.length >= 2) {
-        itemA = `${selectedCourses[0].provider} - ${selectedCourses[0].courseName}`;
-        itemB = `${selectedCourses[1].provider} - ${selectedCourses[1].courseName}`;
-      } else if (selectedCourses.length === 1) {
-        itemA = `${selectedCourses[0].provider} - ${selectedCourses[0].courseName}`;
-        itemB = "Coursera Introduction to AI";
-      } else {
-        itemA = "Coursera Introduction to AI";
-        itemB = "TECHCOOL Nhập môn AI";
-      }
+  const handleRunAiComparison = () => {
+    if (selectedCourses.length < 2) {
+      showToast("Vui lòng chọn ít nhất 2 khóa học để phân tích.", "warning");
+      return;
     }
+
+    // Gửi đầy đủ thông tin từng khóa học để AI có đủ ngữ cảnh
+    const items = selectedCourses.map(course => ({
+      name: course.courseName,
+      provider: course.provider,
+      price: course.price,
+      duration: course.duration,
+      format: course.format,
+      tools: course.tools,
+      targetAudience: Array.isArray(course.audience) ? course.audience : [course.audience],
+      strengths: course.strengths,
+      weaknesses: course.weaknesses,
+    }));
 
     setMockAiData(null);
     setShowAiSection(true);
-    showToast(`AI đang phân tích so sánh: "${itemA}" vs "${itemB}"...`, "info");
+    const courseNames = selectedCourses.map(c => `${c.provider} - ${c.courseName}`).join(", ");
+    showToast(`AI đang phân tích ${selectedCourses.length} khóa học: ${courseNames.substring(0, 80)}...`, "info");
 
-    submitAi({ itemA, itemB });
+    submitAi({ items });
 
     setTimeout(() => {
       if (aiResultRef.current) {
         aiResultRef.current.scrollIntoView({ behavior: "smooth" });
       }
     }, 200);
-  };
-
-  const handleLoadMockAi = () => {
-    setMockAiData(MOCK_AI_DATA);
-    setShowAiSection(true);
-    showToast("Đã tải dữ liệu so sánh mẫu!", "success");
-    setTimeout(() => {
-      if (aiResultRef.current) {
-        aiResultRef.current.scrollIntoView({ behavior: "smooth" });
-      }
-    }, 100);
   };
 
   const currentAiData = mockAiData || aiObject;
@@ -694,8 +686,8 @@ function Compare() {
                 <button
                   className="compare-detail-ai-btn"
                   onClick={() => handleRunAiComparison()}
-                  disabled={isAiLoading}
-                  title="Chạy AI so sánh tự động"
+                  disabled={isAiLoading || selectedCourses.length < 2}
+                  title={selectedCourses.length < 2 ? "Chọn ít nhất 2 khóa học để phân tích" : "Chạy AI so sánh tự động"}
                 >
                   <span className="material-symbols-outlined animated-sparkle">auto_awesome</span>
                   {isAiLoading ? "AI đang phân tích..." : "Phân tích bằng AI"}
@@ -815,7 +807,7 @@ function Compare() {
                 {isAiLoading && (
                   <div className="compare-ai-loading">
                     <div className="ai-pulse-spinner"></div>
-                    <span>Gemini AI đang tổng hợp thông tin và stream dữ liệu real-time...</span>
+                    <span>Trợ lí AI đang tổng hợp thông tin...</span>
                   </div>
                 )}
 
