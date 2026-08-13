@@ -52,6 +52,12 @@
   align-items: flex-end;
   gap: 16px;
   flex-wrap: wrap;
+  padding: 24px 28px;
+  margin-bottom: 20px;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid #E2E8F0;
+  border-radius: 18px;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
 }
 
 .db-title {

@@ -61,8 +61,8 @@ export default function Register() {
             src="https://lh3.googleusercontent.com/aida/AP1WRLvl3TylLX5tEdiJSMfmr6ugm9QtJ4lcdcr4uSuYyrTf6VSE955XaAlGeJVRgB8oSABumCkH-dZkcNQnSZsfpSCNmZmRDeeGaTEUVCBJPTEmW9KaI_V4Fwtl4pGOYIBNQwKelMpCU-7BF9-HcrD5JrGLZcxlHPp4c-JL4AaG4u4F5T2Wt8hXoNc0wTqCJ8pRyfgG6nMihc_x2246zk-8GqW-FkyKaoVw-K7lzAop5DcB06pQA6KhunDO9u0"
             alt="Course Analyser Logo"
           />
-          <h1 className="auth-title">Create an Account</h1>
-          <p className="auth-subtitle">Join Course Analyser to start tracking competitors.</p>
+          <h1 className="auth-title">Tạo tài khoản</h1>
+          <p className="auth-subtitle">Tham gia Course Analyser để bắt đầu theo dõi đối thủ.</p>
         </div>
 
         {/* Error banner */}
@@ -77,14 +77,14 @@ export default function Register() {
         <form className="auth-form" onSubmit={handleSubmit}>
           {/* Full Name */}
           <div className="auth-field">
-            <label className="auth-label" htmlFor="fullName">Full Name</label>
+            <label className="auth-label" htmlFor="fullName">Họ và tên</label>
             <div className="auth-input-wrap">
               <span className="material-symbols-outlined">person</span>
               <input
                 id="fullName"
                 className="auth-input"
                 type="text"
-                placeholder="John Doe"
+                placeholder="Nguyễn Văn A"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 required
@@ -94,14 +94,14 @@ export default function Register() {
 
           {/* Email */}
           <div className="auth-field">
-            <label className="auth-label" htmlFor="email">Email Address</label>
+            <label className="auth-label" htmlFor="email">Địa chỉ Email</label>
             <div className="auth-input-wrap">
               <span className="material-symbols-outlined">mail</span>
               <input
                 id="email"
                 className="auth-input"
                 type="email"
-                placeholder="name@company.com"
+                placeholder="ten@congty.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -111,7 +111,7 @@ export default function Register() {
 
           {/* Password + strength */}
           <div className="auth-field">
-            <label className="auth-label" htmlFor="password">Password</label>
+            <label className="auth-label" htmlFor="password">Mật khẩu</label>
             <div className="auth-input-wrap">
               <span className="material-symbols-outlined">lock</span>
               <input
@@ -128,7 +128,7 @@ export default function Register() {
                 type="button"
                 className="auth-eye-btn"
                 onClick={() => setShowPassword((v) => !v)}
-                aria-label="Toggle password visibility"
+                aria-label="Ẩn/Hiện mật khẩu"
               >
                 <span className="material-symbols-outlined">
                   {showPassword ? "visibility_off" : "visibility"}
@@ -154,7 +154,7 @@ export default function Register() {
 
           {/* Confirm Password */}
           <div className="auth-field">
-            <label className="auth-label" htmlFor="confirmPassword">Confirm Password</label>
+            <label className="auth-label" htmlFor="confirmPassword">Xác nhận mật khẩu</label>
             <div className="auth-input-wrap">
               <span className="material-symbols-outlined">lock_reset</span>
               <input
@@ -173,16 +173,16 @@ export default function Register() {
           <div className="auth-terms">
             <input id="terms" type="checkbox" required />
             <label className="auth-terms-label" htmlFor="terms">
-              I agree to the{" "}
-              <a href="#">Terms of Service</a>{" "}
-              and{" "}
-              <a href="#">Privacy Policy</a>.
+              Tôi đồng ý với{" "}
+              <a href="#">Điều khoản dịch vụ</a>{" "}
+              và{" "}
+              <a href="#">Chính sách bảo mật</a>.
             </label>
           </div>
 
           {/* Submit */}
           <button className="auth-btn" type="submit" disabled={loading}>
-            <span>{loading ? "Creating account..." : "Đăng ký"}</span>
+            <span>{loading ? "Đang tạo tài khoản..." : "Đăng ký"}</span>
             {!loading && <span className="material-symbols-outlined">arrow_forward</span>}
           </button>
         </form>
@@ -190,19 +190,13 @@ export default function Register() {
         {/* Footer */}
         <div className="auth-footer">
           <p>
-            Already have an account?
+            Đã có tài khoản?{" "}
             <Link to="/">
               Đăng nhập
               <span className="material-symbols-outlined">login</span>
             </Link>
           </p>
         </div>
-      </div>
-
-      {/* Security badge */}
-      <div className="auth-badge">
-        <span className="material-symbols-outlined">verified_user</span>
-        <span>Enterprise Grade Security</span>
       </div>
     </div>
   );

@@ -40,7 +40,7 @@ export default function Login() {
             alt="Course Analyser Logo"
           />
           <h1 className="auth-title">Course Analyser</h1>
-          <p className="auth-subtitle">Welcome back. Please log in to your account.</p>
+          <p className="auth-subtitle">Chào mừng quay trở lại. Vui lòng đăng nhập vào tài khoản của bạn.</p>
         </div>
 
         {/* Error banner */}
@@ -62,7 +62,7 @@ export default function Login() {
                 id="email"
                 className="auth-input"
                 type="email"
-                placeholder="name@company.com"
+                placeholder="ten@congty.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -73,8 +73,8 @@ export default function Login() {
           {/* Password */}
           <div className="auth-field">
             <div className="auth-field-header">
-              <label className="auth-label" htmlFor="password">Password</label>
-              <a className="auth-forgot" href="#">Forgot Password?</a>
+              <label className="auth-label" htmlFor="password">Mật khẩu</label>
+              <a className="auth-forgot" href="#">Quên mật khẩu?</a>
             </div>
             <div className="auth-input-wrap">
               <span className="material-symbols-outlined">lock</span>
@@ -100,19 +100,13 @@ export default function Login() {
         {/* Footer */}
         <div className="auth-footer">
           <p>
-            Don't have an account?
+            Chưa có tài khoản?{" "}
             <Link to="/register">
               Đăng ký ngay
               <span className="material-symbols-outlined">arrow_forward</span>
             </Link>
           </p>
         </div>
-      </div>
-
-      {/* Security badge */}
-      <div className="auth-badge">
-        <span className="material-symbols-outlined">verified_user</span>
-        <span>Secure Internal Access</span>
       </div>
     </div>
   );

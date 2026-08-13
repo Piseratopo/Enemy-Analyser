@@ -5,6 +5,7 @@ import userController from "./users/user.controller.js";
 import courseController from "./courses/course.controller.js";
 import providerController from "./providers/provider.controller.js";
 import comparisonController from "./comparisons/comparison.controller.js";
+import aiComparisonController from "./comparisons/ai-comparison.controller.js";
 import insightController from "./insights/insight.controller.js";
 
 const app = express();
@@ -16,6 +17,7 @@ app.use("/api/users", userController);
 app.use("/api/courses", courseController);
 app.use("/api/providers", providerController);
 app.use("/api/comparisons", comparisonController);
+app.use("/api/compare", aiComparisonController);
 app.use("/api/insights", insightController);
 
 app.get("/health", (req, res) => {
