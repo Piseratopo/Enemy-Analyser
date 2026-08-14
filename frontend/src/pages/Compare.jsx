@@ -138,7 +138,7 @@ function Compare() {
   };
 
   const { object: aiObject, submit: submitAi, isLoading: isAiLoading } = useObject({
-    api: "http://localhost:5000/api/compare",
+    api: `${import.meta.env.VITE_API_URL || "http://localhost:5000"}/api/compare`,
     schema: CompareSchema,
     onError: (err) => {
       console.error("AI Streaming error:", err);
