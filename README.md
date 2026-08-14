@@ -1,26 +1,26 @@
-# 📊 Enemy Analyser - AI Course Market & Competitor Analysis
+# Enemy Analyser - AI Course Market & Competitor Analysis
 
 **Enemy Analyser** là hệ thống phân tích thị trường và đối thủ cạnh tranh chuyên sâu dành cho các khóa học đào tạo AI tại Việt Nam. Nền tảng hỗ trợ tạo bảng đối sánh đa chiều, phân tích điểm mạnh - điểm yếu và đưa ra nhận định chiến lược.
 
-🌐 **Trải nghiệm trực tuyến (Live Demo):** [Course Analyser](https://enemy-analyser.vercel.app/dashboard)
+**Trải nghiệm trực tuyến (Live Demo):** [Course Analyser](https://enemy-analyser.vercel.app/dashboard)
 
 ---
 
-## 🚀 Tính năng nổi bật
+## Tính năng nổi bật
 
-- 📈 **Bảng điều khiển Tổng quan (Dashboard):** Thống kê tổng quan về số lượng khóa học, đơn vị đào tạo, mức học phí trung bình và phân bố thị trường.
-- 📚 **Quản lý Khóa học (Course Management):** Tra cứu, tìm kiếm, lọc đa tiêu chí (theo đơn vị, mức giá, hình thức học, công cụ giảng dạy, đối tượng học viên) và quản lý CRUD khóa học.
-- 🏢 **Quản lý Đối thủ / Đơn vị đào tạo (Provider Directory):** Hồ sơ thông tin đối thủ cạnh tranh, danh mục khóa học trực thuộc và đánh giá năng lực cạnh tranh.
-- 🤖 **So sánh Đối thủ bằng Trí tuệ nhân tạo (AI Comparison Matrix):** 
+- **Bảng điều khiển Tổng quan (Dashboard):** Thống kê tổng quan về số lượng khóa học, đơn vị đào tạo, mức học phí trung bình và phân bố thị trường.
+- **Quản lý Khóa học (Course Management):** Tra cứu, tìm kiếm, lọc đa tiêu chí (theo đơn vị, mức giá, hình thức học, công cụ giảng dạy, đối tượng học viên) và quản lý CRUD khóa học.
+- **Quản lý Đối thủ / Đơn vị đào tạo (Provider Directory):** Hồ sơ thông tin đối thủ cạnh tranh, danh mục khóa học trực thuộc và đánh giá năng lực cạnh tranh.
+- **So sánh Đối thủ bằng Trí tuệ nhân tạo (AI Comparison Matrix):** 
   - So sánh trực quan giữa 2 hoặc nhiều khóa học.
   - Stream kết quả phân tích thời gian thực với **Google Gemini AI** qua Vercel AI SDK.
   - Ma trận so sánh chi tiết: Học phí, thời lượng, công nghệ sử dụng, ưu điểm, nhược điểm và nhận định chuyên gia (Verdict).
-- 📄 **Xuất báo cáo PDF:** Hỗ trợ xuất ma trận so sánh và kết quả phân tích thành tệp PDF chuyên nghiệp.
-- 🔐 **Xác thực & Bảo mật (Authentication):** Đăng ký, đăng nhập tài khoản an toàn với token JWT và phân quyền.
+- **Xuất báo cáo PDF:** Hỗ trợ xuất ma trận so sánh và kết quả phân tích thành tệp PDF chuyên nghiệp.
+- **Xác thực & Bảo mật (Authentication):** Đăng ký, đăng nhập tài khoản an toàn với token JWT và phân quyền.
 
 ---
 
-## 🛠️ Công nghệ sử dụng
+## Công nghệ sử dụng
 
 ### **Frontend**
 - **Framework:** [React 19](https://react.dev/) + [Vite](https://vitejs.dev/)
@@ -40,7 +40,7 @@
 
 ---
 
-## 📁 Cấu trúc thư mục dự án
+## Cấu trúc thư mục dự án
 
 ```text
 Enemy-Analyser/
@@ -83,7 +83,7 @@ Enemy-Analyser/
 
 ---
 
-## ⚙️ Hướng dẫn cài đặt & Chạy cục bộ (Local Setup)
+## Hướng dẫn cài đặt & Chạy cục bộ (Local Setup)
 
 ### 1. Yêu cầu tiên quyết
 - **Node.js**: Phiên bản 18.x trở lên
@@ -157,7 +157,7 @@ Enemy-Analyser/
 
 ---
 
-## 📡 Danh sách API Endpoints chính
+## Danh sách API Endpoints chính
 
 | Phương thức | Endpoint | Mô tả |
 | :--- | :--- | :--- |
@@ -175,7 +175,7 @@ Enemy-Analyser/
 
 ---
 
-## 🚀 Hướng dẫn Triển khai (Deployment)
+## Hướng dẫn Triển khai (Deployment)
 
 ### Backend (Vercel / Render / Railway)
 - Khởi tạo project và liên kết với thư mục `backend/`.
@@ -189,6 +189,6 @@ Enemy-Analyser/
 
 ---
 
-## 👥 Đóng góp & Bản quyền
+## Đóng góp & Bản quyền
 
 Dự án phục vụ mục đích nghiên cứu và phân tích thị trường đào tạo trí tuệ nhân tạo. Mọi đóng góp (Pull Request / Issue) đều được hoan nghênh!

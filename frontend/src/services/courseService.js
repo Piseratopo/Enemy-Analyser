@@ -2,7 +2,7 @@ import api from "../api/axios";
 
 export const getAllCourses = async (params = {}) => {
   try {
-    const response = await api.get("/api/courses/public", { params });
+    const response = await api.get("/api/courses", { params });
     return response.data;
   } catch (error) {
     const message = error.response?.data?.message || "Không thể tải danh sách khóa học.";

@@ -19,7 +19,6 @@ export default function Register() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
-  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const { registerUser } = useAuth();
@@ -117,23 +116,12 @@ export default function Register() {
               <input
                 id="password"
                 className="auth-input"
-                style={{ paddingRight: 44 }}
-                type={showPassword ? "text" : "password"}
+                type="password"
                 placeholder="••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              <button
-                type="button"
-                className="auth-eye-btn"
-                onClick={() => setShowPassword((v) => !v)}
-                aria-label="Ẩn/Hiện mật khẩu"
-              >
-                <span className="material-symbols-outlined">
-                  {showPassword ? "visibility_off" : "visibility"}
-                </span>
-              </button>
             </div>
 
             {/* Strength bars */}
