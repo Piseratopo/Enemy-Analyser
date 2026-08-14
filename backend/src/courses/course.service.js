@@ -1,11 +1,11 @@
 import * as courseRepository from "./course.repository.js";
 
-export const getAllCourses = async () => {
-   return await courseRepository.getAll();
+export const getAllCourses = async (query = {}) => {
+   return await courseRepository.getAll(query);
 };
 
-export const getCoursesByUserId = async (userId) => {
-   return await courseRepository.getAllByUserId(userId);
+export const getCoursesByUserId = async (userId, query = {}) => {
+   return await courseRepository.getAllByUserId(userId, query);
 };
 
 export const getCourseById = async (id, userId) => {

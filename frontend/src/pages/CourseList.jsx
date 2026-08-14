@@ -2,6 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { getAllCourses, deleteCourse } from "../services/courseService";
+import { getAllProviders } from "../services/providerService";
 import { useAuth } from "../context/AuthContext";
 import "./CourseList.css";
 
@@ -184,16 +185,38 @@ export default function CourseList() {
   const [selectedCourses, setSelectedCourses] = useState(new Set());
   const [detailCourse, setDetailCourse]     = useState(null);
 
+  // Pagination & providers
+  const [page, setPage]                     = useState(1);
+  const [limit]                             = useState(10);
+  const [pagination, setPagination]         = useState({
+    currentPage: 1,
+    totalPages: 1,
+    totalItems: 0,
+    limit: 10,
+    hasNextPage: false,
+    hasPrevPage: false,
+  });
+  const [providerList, setProviderList]     = useState([]);
+
   // Filters
-  const [search, setSearch]         = useState("");
-  const [filterFormat, setFilterFormat] = useState("");
+  const [search, setSearch]                 = useState("");
+  const [filterFormat, setFilterFormat]     = useState("");
   const [filterProvider, setFilterProvider] = useState(searchParams.get("provider") || "");
   const [showFormatMenu, setShowFormatMenu] = useState(false);
   const [showProviderMenu, setShowProviderMenu] = useState(false);
   const formatRef   = useRef(null);
   const providerRef = useRef(null);
 
-  useEffect(() => { loadCourses(); }, []);
+  // Fetch all providers for filter dropdown
+  useEffect(() => {
+    getAllProviders()
+      .then((data) => {
+        if (Array.isArray(data)) {
+          setProviderList(data.map(p => (typeof p === "string" ? p : p.name)).filter(Boolean));
+        }
+      })
+      .catch(console.error);
+  }, []);
 
   // Close dropdowns on outside click
   useEffect(() => {
@@ -205,11 +228,34 @@ export default function CourseList() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const loadCourses = async () => {
+  const loadCourses = async (targetPage = page) => {
     try {
       setLoading(true);
-      const data = await getAllCourses();
-      setCourses(data);
+      setError("");
+      const res = await getAllCourses({
+        page: targetPage,
+        limit,
+        search,
+        format: filterFormat,
+        provider: filterProvider,
+      });
+
+      if (res && res.data && res.pagination) {
+        setCourses(res.data);
+        setPagination(res.pagination);
+      } else if (Array.isArray(res)) {
+        setCourses(res);
+        setPagination({
+          currentPage: 1,
+          totalPages: 1,
+          totalItems: res.length,
+          limit: 10,
+          hasNextPage: false,
+          hasPrevPage: false,
+        });
+      } else {
+        setCourses([]);
+      }
     } catch (err) {
       setError(err.message);
     } finally {
@@ -217,12 +263,19 @@ export default function CourseList() {
     }
   };
 
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      loadCourses(page);
+    }, 250);
+    return () => clearTimeout(timer);
+  }, [page, search, filterFormat, filterProvider]);
+
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc chắn muốn xóa khóa học này?")) return;
     try {
       await deleteCourse(id);
-      setCourses(prev => prev.filter(c => c.id !== id));
       setSelectedCourses(prev => { const s = new Set(prev); s.delete(id); return s; });
+      loadCourses(page);
     } catch (err) {
       setError(err.message);
     }
@@ -232,8 +285,8 @@ export default function CourseList() {
     if (!window.confirm(`Xóa ${selectedCourses.size} khóa học đã chọn?`)) return;
     try {
       await Promise.all([...selectedCourses].map(id => deleteCourse(id)));
-      setCourses(prev => prev.filter(c => !selectedCourses.has(c.id)));
       setSelectedCourses(new Set());
+      loadCourses(page);
     } catch (err) {
       setError(err.message);
     }
@@ -243,36 +296,132 @@ export default function CourseList() {
     setSearch("");
     setFilterFormat("");
     setFilterProvider("");
+    setPage(1);
   };
 
   const hasFilters = search || filterFormat || filterProvider;
 
   /* Derived lists */
-  const uniqueProviders = [...new Set(
-    courses.map(c => c.provider?.name || c.provider).filter(Boolean)
-  )].sort();
-
-  const filtered = courses.filter(c => {
-    const providerName = c.provider?.name || c.provider || "";
-    const matchSearch = !search ||
-      c.title.toLowerCase().includes(search.toLowerCase()) ||
-      providerName.toLowerCase().includes(search.toLowerCase()) ||
-      arrayVal(c.toolCombo).some(t => t.toLowerCase().includes(search.toLowerCase()));
-    const matchFormat = !filterFormat || (c.learningFormat || "").toLowerCase() === filterFormat.toLowerCase();
-    const matchProvider = !filterProvider || providerName === filterProvider;
-    return matchSearch && matchFormat && matchProvider;
-  });
+  const uniqueProviders = [...new Set([
+    ...providerList,
+    ...courses.map(c => c.provider?.name || c.provider).filter(Boolean)
+  ])].sort();
 
   /* Selection */
   const handleSelectAll = (e) => {
-    setSelectedCourses(e.target.checked ? new Set(filtered.map(c => c.id)) : new Set());
+    if (e.target.checked) {
+      setSelectedCourses(prev => {
+        const next = new Set(prev);
+        courses.forEach(c => next.add(c.id));
+        return next;
+      });
+    } else {
+      setSelectedCourses(prev => {
+        const next = new Set(prev);
+        courses.forEach(c => next.delete(c.id));
+        return next;
+      });
+    }
   };
+
   const handleSelectCourse = (id) => {
     setSelectedCourses(prev => {
       const s = new Set(prev);
       s.has(id) ? s.delete(id) : s.add(id);
       return s;
     });
+  };
+
+  const handleExportCSV = async () => {
+    try {
+      const res = await getAllCourses({
+        page: 1,
+        limit: 1000,
+        search,
+        format: filterFormat,
+        provider: filterProvider,
+      });
+      const exportData = Array.isArray(res) ? res : (res?.data || []);
+      if (!exportData.length) {
+        alert("Không có dữ liệu để xuất.");
+        return;
+      }
+      const headers = ["Tên khóa học", "Đơn vị đào tạo", "Học phí", "Thời lượng", "Hình thức", "Công cụ / Chủ đề", "Nguồn"];
+      const rows = exportData.map(c => [
+        `"${(c.title || "").replace(/"/g, '""')}"`,
+        `"${(c.provider?.name || c.provider || "").replace(/"/g, '""')}"`,
+        `"${feeLabel(c)}"`,
+        `"${c.durationDisplay || ""}"`,
+        `"${c.learningFormat || ""}"`,
+        `"${arrayVal(c.toolCombo).join(", ").replace(/"/g, '""')}"`,
+        `"${c.sourceUrl || ""}"`
+      ]);
+      const csvContent = "data:text/csv;charset=utf-8,\uFEFF" + [headers.join(","), ...rows.map(r => r.join(","))].join("\n");
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", `danh_sach_khoa_hoc_${new Date().toISOString().slice(0, 10)}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    } catch (err) {
+      alert("Lỗi xuất file: " + err.message);
+    }
+  };
+
+  const renderPaginationNumbers = () => {
+    const { currentPage, totalPages } = pagination;
+    if (totalPages <= 1) return null;
+
+    const pages = [];
+    const maxVisiblePages = 5;
+
+    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
+    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+    if (endPage - startPage + 1 < maxVisiblePages) {
+      startPage = Math.max(1, endPage - maxVisiblePages + 1);
+    }
+
+    if (startPage > 1) {
+      pages.push(
+        <button key={1} className={`page-btn ${currentPage === 1 ? "active" : ""}`} onClick={() => setPage(1)}>
+          1
+        </button>
+      );
+      if (startPage > 2) {
+        pages.push(<span key="start-ellipsis" className="page-ellipsis">...</span>);
+      }
+    }
+
+    for (let p = startPage; p <= endPage; p++) {
+      pages.push(
+        <button
+          key={p}
+          className={`page-btn ${currentPage === p ? "active" : ""}`}
+          onClick={() => setPage(p)}
+        >
+          {p}
+        </button>
+      );
+    }
+
+    if (endPage < totalPages) {
+      if (endPage < totalPages - 1) {
+        pages.push(<span key="end-ellipsis" className="page-ellipsis">...</span>);
+      }
+      pages.push(
+        <button
+          key={totalPages}
+          className={`page-btn ${currentPage === totalPages ? "active" : ""}`}
+          onClick={() => setPage(totalPages)}
+        >
+          {totalPages}
+        </button>
+      );
+    }
+
+    return pages;
   };
 
   return (
@@ -285,7 +434,7 @@ export default function CourseList() {
             <p>Phân tích và so sánh các khóa học trên thị trường.</p>
           </div>
           <div className="course-actions">
-            <button className="btn btn-secondary">
+            <button className="btn btn-secondary" onClick={handleExportCSV}>
               <span className="material-symbols-outlined">download</span>
               Xuất CSV
             </button>
@@ -324,10 +473,10 @@ export default function CourseList() {
                     type="text"
                     placeholder="Tìm khóa học..."
                     value={search}
-                    onChange={e => setSearch(e.target.value)}
+                    onChange={e => { setSearch(e.target.value); setPage(1); }}
                   />
                   {search && (
-                    <button className="filter-search-clear" onClick={() => setSearch("")}>
+                    <button className="filter-search-clear" onClick={() => { setSearch(""); setPage(1); }}>
                       <span className="material-symbols-outlined">close</span>
                     </button>
                   )}
@@ -350,7 +499,7 @@ export default function CourseList() {
                         <button
                           key={f}
                           className={`filter-dropdown-item ${filterFormat === f ? "selected" : ""}`}
-                          onClick={() => { setFilterFormat(filterFormat === f ? "" : f); setShowFormatMenu(false); }}
+                          onClick={() => { setFilterFormat(filterFormat === f ? "" : f); setPage(1); setShowFormatMenu(false); }}
                         >
                           <span className="material-symbols-outlined">{fmtMeta(f).icon}</span>
                           {f}
@@ -379,7 +528,7 @@ export default function CourseList() {
                         <button
                           key={p}
                           className={`filter-dropdown-item ${filterProvider === p ? "selected" : ""}`}
-                          onClick={() => { setFilterProvider(filterProvider === p ? "" : p); setShowProviderMenu(false); }}
+                          onClick={() => { setFilterProvider(filterProvider === p ? "" : p); setPage(1); setShowProviderMenu(false); }}
                         >
                           <span className="material-symbols-outlined">corporate_fare</span>
                           {p}
@@ -397,7 +546,7 @@ export default function CourseList() {
                 )}
               </div>
 
-              <span className="filter-count">{filtered.length} kết quả</span>
+              <span className="filter-count">{pagination.totalItems} kết quả</span>
             </div>
 
             {/* ── Table ── */}
@@ -409,7 +558,7 @@ export default function CourseList() {
                       <label className="checkbox-label">
                         <input
                           type="checkbox"
-                          checked={filtered.length > 0 && filtered.every(c => selectedCourses.has(c.id))}
+                          checked={courses.length > 0 && courses.every(c => selectedCourses.has(c.id))}
                           onChange={handleSelectAll}
                         />
                         <span className="checkbox-custom" />
@@ -424,7 +573,7 @@ export default function CourseList() {
                   </tr>
                 </thead>
                 <tbody>
-                  {filtered.length === 0 ? (
+                  {courses.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="empty-state">
                         <span className="material-symbols-outlined" style={{ fontSize: 40, display: "block", marginBottom: 8, color: "#c3c6d6" }}>inventory_2</span>
@@ -432,7 +581,7 @@ export default function CourseList() {
                       </td>
                     </tr>
                   ) : (
-                    filtered.map(course => {
+                    courses.map(course => {
                       const meta = fmtMeta(course.learningFormat);
                       const tools = arrayVal(course.toolCombo);
                       const providerName = course.provider?.name || course.provider || "—";
@@ -527,11 +676,32 @@ export default function CourseList() {
                 </tbody>
               </table>
 
-              {/* Pagination info */}
+              {/* Pagination controls */}
               <div className="pagination">
                 <span className="pagination-info">
-                  Hiển thị {filtered.length} / {courses.length} khóa học
+                  Hiển thị {pagination.totalItems > 0 ? (pagination.currentPage - 1) * pagination.limit + 1 : 0} – {Math.min(pagination.currentPage * pagination.limit, pagination.totalItems)} trên tổng số {pagination.totalItems} khóa học
                 </span>
+                {pagination.totalPages > 1 && (
+                  <div className="pagination-controls">
+                    <button
+                      className="page-btn"
+                      disabled={!pagination.hasPrevPage}
+                      onClick={() => setPage(p => Math.max(1, p - 1))}
+                      title="Trang trước"
+                    >
+                      <span className="material-symbols-outlined">chevron_left</span>
+                    </button>
+                    {renderPaginationNumbers()}
+                    <button
+                      className="page-btn"
+                      disabled={!pagination.hasNextPage}
+                      onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+                      title="Trang kế"
+                    >
+                      <span className="material-symbols-outlined">chevron_right</span>
+                    </button>
+                  </div>
+                )}
               </div>
             </div>
 

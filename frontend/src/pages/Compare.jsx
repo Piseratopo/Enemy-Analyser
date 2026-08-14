@@ -271,9 +271,8 @@ function Compare() {
           getAllComparisons(),
         ]);
 
-        const normalizedCourses = Array.isArray(courseData)
-          ? courseData.map((course, index) => normalizeCourse(course, index))
-          : [];
+        const rawCourses = Array.isArray(courseData) ? courseData : (courseData?.data || []);
+        const normalizedCourses = rawCourses.map((course, index) => normalizeCourse(course, index));
         setCourses(normalizedCourses);
 
         const normalizedComparisons = Array.isArray(comparisonData)

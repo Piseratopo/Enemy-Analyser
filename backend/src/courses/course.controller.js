@@ -7,7 +7,7 @@ const router = express.Router();
 
 router.get("/public", async (req, res) => {
    try {
-      const data = await courseService.getAllCourses();
+      const data = await courseService.getAllCourses(req.query);
       return res.status(200).json(data);
    } catch (error) {
       return res.status(500).json({ message: error.message });
@@ -18,7 +18,7 @@ router.use(authMiddleware);
 
 router.get("/", async (req, res) => {
    try {
-      const data = await courseService.getCoursesByUserId(req.user.userId);
+      const data = await courseService.getCoursesByUserId(req.user.userId, req.query);
       return res.status(200).json(data);
    } catch (error) {
       return res.status(500).json({ message: error.message });

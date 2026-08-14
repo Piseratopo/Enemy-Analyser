@@ -131,7 +131,7 @@ export default function Dashboard() {
 
   useEffect(() => {
     getAllCourses()
-      .then((c) => setCourses(Array.isArray(c) ? c : []))
+      .then((c) => setCourses(Array.isArray(c) ? c : (c?.data || [])))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);
