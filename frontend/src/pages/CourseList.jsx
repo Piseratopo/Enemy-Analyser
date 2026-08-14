@@ -197,6 +197,7 @@ export default function CourseList() {
     hasPrevPage: false,
   });
   const [providerList, setProviderList]     = useState([]);
+  const [refreshKey, setRefreshKey]         = useState(0);
 
   // Filters
   const [search, setSearch]                 = useState("");
@@ -228,54 +229,57 @@ export default function CourseList() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  const loadCourses = async (targetPage = page) => {
-    try {
-      setLoading(true);
-      setError("");
-      const res = await getAllCourses({
-        page: targetPage,
-        limit,
-        search,
-        format: filterFormat,
-        provider: filterProvider,
-      });
-
-      if (res && res.data && res.pagination) {
-        setCourses(res.data);
-        setPagination(res.pagination);
-      } else if (Array.isArray(res)) {
-        setCourses(res);
-        setPagination({
-          currentPage: 1,
-          totalPages: 1,
-          totalItems: res.length,
-          limit: 10,
-          hasNextPage: false,
-          hasPrevPage: false,
-        });
-      } else {
-        setCourses([]);
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  // Reset về trang 1 khi filter thay đổi (không phụ thuộc vào page)
   useEffect(() => {
-    const timer = setTimeout(() => {
-      loadCourses(page);
+    setPage(1);
+  }, [search, filterFormat, filterProvider]);
+
+  // Fetch data mỗi khi page hoặc filter thay đổi
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const res = await getAllCourses({
+          page,
+          limit,
+          search,
+          format: filterFormat,
+          provider: filterProvider,
+        });
+
+        if (res && res.data && res.pagination) {
+          setCourses(res.data);
+          setPagination(res.pagination);
+        } else if (Array.isArray(res)) {
+          setCourses(res);
+          setPagination({
+            currentPage: 1,
+            totalPages: 1,
+            totalItems: res.length,
+            limit: 10,
+            hasNextPage: false,
+            hasPrevPage: false,
+          });
+        } else {
+          setCourses([]);
+        }
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
     }, 250);
     return () => clearTimeout(timer);
-  }, [page, search, filterFormat, filterProvider]);
+  }, [page, search, filterFormat, filterProvider, refreshKey]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc chắn muốn xóa khóa học này?")) return;
     try {
       await deleteCourse(id);
       setSelectedCourses(prev => { const s = new Set(prev); s.delete(id); return s; });
-      loadCourses(page);
+      // Trigger re-fetch bằng cách toggle một dummy state hoặc re-set page
+      setRefreshKey(k => k + 1);
     } catch (err) {
       setError(err.message);
     }
@@ -286,7 +290,7 @@ export default function CourseList() {
     try {
       await Promise.all([...selectedCourses].map(id => deleteCourse(id)));
       setSelectedCourses(new Set());
-      loadCourses(page);
+      setRefreshKey(k => k + 1);
     } catch (err) {
       setError(err.message);
     }
@@ -296,7 +300,7 @@ export default function CourseList() {
     setSearch("");
     setFilterFormat("");
     setFilterProvider("");
-    setPage(1);
+    // page sẽ tự reset về 1 qua useEffect trên
   };
 
   const hasFilters = search || filterFormat || filterProvider;

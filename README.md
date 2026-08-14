@@ -2,6 +2,8 @@
 
 **Enemy Analyser** là hệ thống phân tích thị trường và đối thủ cạnh tranh chuyên sâu dành cho các khóa học đào tạo AI tại Việt Nam. Nền tảng hỗ trợ tạo bảng đối sánh đa chiều, phân tích điểm mạnh - điểm yếu và đưa ra nhận định chiến lược.
 
+🌐 **Trải nghiệm trực tuyến (Live Demo):** [Course Analyser](https://enemy-analyser.vercel.app/dashboard)
+
 ---
 
 ## 🚀 Tính năng nổi bật
