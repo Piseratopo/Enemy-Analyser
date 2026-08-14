@@ -36,7 +36,7 @@ export default function Login() {
         {/* Header */}
         <div className="auth-logo-wrap">
           <img
-            src="https://lh3.googleusercontent.com/aida/AP1WRLvl3TylLX5tEdiJSMfmr6ugm9QtJ4lcdcr4uSuYyrTf6VSE955XaAlGeJVRgB8oSABumCkH-dZkcNQnSZsfpSCNmZmRDeeGaTEUVCBJPTEmW9KaI_V4Fwtl4pGOYIBNQwKelMpCU-7BF9-HcrD5JrGLZcxlHPp4c-JL4AaG4u4F5T2Wt8hXoNc0wTqCJ8pRyfgG6nMihc_x2246zk-8GqW-FkyKaoVw-K7lzAop5DcB06pQA6KhunDO9u0"
+            src="/course_analyser_logo.png"
             alt="Course Analyser Logo"
           />
           <h1 className="auth-title">Course Analyser</h1>
