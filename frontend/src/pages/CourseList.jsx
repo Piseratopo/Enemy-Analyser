@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useMemo } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import MainLayout from "../layouts/MainLayout";
 import { getAllCourses, deleteCourse } from "../services/courseService";
@@ -179,25 +179,17 @@ export default function CourseList() {
   const { user } = useAuth();
   const canEdit = user?.role === "admin" || user?.role === "staff";
 
-  const [courses, setCourses]               = useState([]);
-  const [loading, setLoading]               = useState(true);
-  const [error, setError]                   = useState("");
+  const [rawCourses, setRawCourses]           = useState([]);
+  const [loading, setLoading]                 = useState(true);
+  const [error, setError]                     = useState("");
   const [selectedCourses, setSelectedCourses] = useState(new Set());
-  const [detailCourse, setDetailCourse]     = useState(null);
+  const [detailCourse, setDetailCourse]       = useState(null);
 
   // Pagination & providers
-  const [page, setPage]                     = useState(1);
-  const [limit]                             = useState(10);
-  const [pagination, setPagination]         = useState({
-    currentPage: 1,
-    totalPages: 1,
-    totalItems: 0,
-    limit: 10,
-    hasNextPage: false,
-    hasPrevPage: false,
-  });
-  const [providerList, setProviderList]     = useState([]);
-  const [refreshKey, setRefreshKey]         = useState(0);
+  const [page, setPage]                       = useState(1);
+  const limit                                 = 10;
+  const [providerList, setProviderList]       = useState([]);
+  const [refreshKey, setRefreshKey]           = useState(0);
 
   // Filters
   const [search, setSearch]                 = useState("");
@@ -229,56 +221,85 @@ export default function CourseList() {
     return () => document.removeEventListener("mousedown", handler);
   }, []);
 
-  // Reset về trang 1 khi filter thay đổi (không phụ thuộc vào page)
+  // Fetch all raw course data once from backend on load or when refreshed
+  useEffect(() => {
+    let isMounted = true;
+    const fetchAllCourses = async () => {
+      try {
+        setLoading(true);
+        setError("");
+        const res = await getAllCourses();
+        const list = Array.isArray(res) ? res : (res?.data || []);
+        if (isMounted) {
+          setRawCourses(list);
+        }
+      } catch (err) {
+        if (isMounted) setError(err.message);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    };
+    fetchAllCourses();
+    return () => { isMounted = false; };
+  }, [refreshKey]);
+
+  // Real-time client-side filter computation (0ms delay, zero reload, zero input unmounting)
+  const filteredCourses = useMemo(() => {
+    let list = [...rawCourses];
+
+    if (search.trim()) {
+      const q = search.trim().toLowerCase();
+      list = list.filter(c => {
+        const title = (c.title || "").toLowerCase();
+        const providerName = typeof c.provider === "object" ? (c.provider?.name || "") : (c.provider || "");
+        const tools = arrayVal(c.toolCombo).join(" ").toLowerCase();
+        const audience = arrayVal(c.targetAudience).join(" ").toLowerCase();
+        const format = (c.learningFormat || "").toLowerCase();
+        const fee = feeLabel(c).toLowerCase();
+
+        return title.includes(q) ||
+          providerName.toLowerCase().includes(q) ||
+          tools.includes(q) ||
+          audience.includes(q) ||
+          format.includes(q) ||
+          fee.includes(q);
+      });
+    }
+
+    if (filterFormat) {
+      list = list.filter(c => (c.learningFormat || "").toLowerCase() === filterFormat.toLowerCase());
+    }
+
+    if (filterProvider) {
+      list = list.filter(c => {
+        const providerName = typeof c.provider === "object" ? (c.provider?.name || "") : (c.provider || "");
+        return providerName.toLowerCase() === filterProvider.toLowerCase();
+      });
+    }
+
+    return list;
+  }, [rawCourses, search, filterFormat, filterProvider]);
+
+  // Reset page to 1 whenever search or filter selection changes
   useEffect(() => {
     setPage(1);
   }, [search, filterFormat, filterProvider]);
 
-  // Fetch data mỗi khi page hoặc filter thay đổi
-  useEffect(() => {
-    const timer = setTimeout(async () => {
-      try {
-        setLoading(true);
-        setError("");
-        const res = await getAllCourses({
-          page,
-          limit,
-          search,
-          format: filterFormat,
-          provider: filterProvider,
-        });
+  // Pagination calculation based on real-time filtered results
+  const totalItems = filteredCourses.length;
+  const totalPages = Math.ceil(totalItems / limit) || 1;
+  const currentPage = Math.min(page, totalPages);
 
-        if (res && res.data && res.pagination) {
-          setCourses(res.data);
-          setPagination(res.pagination);
-        } else if (Array.isArray(res)) {
-          setCourses(res);
-          setPagination({
-            currentPage: 1,
-            totalPages: 1,
-            totalItems: res.length,
-            limit: 10,
-            hasNextPage: false,
-            hasPrevPage: false,
-          });
-        } else {
-          setCourses([]);
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setLoading(false);
-      }
-    }, 250);
-    return () => clearTimeout(timer);
-  }, [page, search, filterFormat, filterProvider, refreshKey]);
+  const displayedCourses = useMemo(() => {
+    const start = (currentPage - 1) * limit;
+    return filteredCourses.slice(start, start + limit);
+  }, [filteredCourses, currentPage, limit]);
 
   const handleDelete = async (id) => {
     if (!window.confirm("Bạn có chắc chắn muốn xóa khóa học này?")) return;
     try {
       await deleteCourse(id);
       setSelectedCourses(prev => { const s = new Set(prev); s.delete(id); return s; });
-      // Trigger re-fetch bằng cách toggle một dummy state hoặc re-set page
       setRefreshKey(k => k + 1);
     } catch (err) {
       setError(err.message);
@@ -300,29 +321,31 @@ export default function CourseList() {
     setSearch("");
     setFilterFormat("");
     setFilterProvider("");
-    // page sẽ tự reset về 1 qua useEffect trên
   };
 
-  const hasFilters = search || filterFormat || filterProvider;
+  const hasFilters = Boolean(search || filterFormat || filterProvider);
 
   /* Derived lists */
-  const uniqueProviders = [...new Set([
-    ...providerList,
-    ...courses.map(c => c.provider?.name || c.provider).filter(Boolean)
-  ])].sort();
+  const uniqueProviders = useMemo(() => {
+    const list = [
+      ...providerList,
+      ...rawCourses.map(c => (typeof c.provider === "object" ? c.provider?.name : c.provider)).filter(Boolean)
+    ];
+    return [...new Set(list)].sort();
+  }, [providerList, rawCourses]);
 
   /* Selection */
   const handleSelectAll = (e) => {
     if (e.target.checked) {
       setSelectedCourses(prev => {
         const next = new Set(prev);
-        courses.forEach(c => next.add(c.id));
+        displayedCourses.forEach(c => next.add(c.id));
         return next;
       });
     } else {
       setSelectedCourses(prev => {
         const next = new Set(prev);
-        courses.forEach(c => next.delete(c.id));
+        displayedCourses.forEach(c => next.delete(c.id));
         return next;
       });
     }
@@ -336,16 +359,9 @@ export default function CourseList() {
     });
   };
 
-  const handleExportCSV = async () => {
+  const handleExportCSV = () => {
     try {
-      const res = await getAllCourses({
-        page: 1,
-        limit: 1000,
-        search,
-        format: filterFormat,
-        provider: filterProvider,
-      });
-      const exportData = Array.isArray(res) ? res : (res?.data || []);
+      const exportData = filteredCourses;
       if (!exportData.length) {
         alert("Không có dữ liệu để xuất.");
         return;
@@ -374,7 +390,6 @@ export default function CourseList() {
   };
 
   const renderPaginationNumbers = () => {
-    const { currentPage, totalPages } = pagination;
     if (totalPages <= 1) return null;
 
     const pages = [];
@@ -458,102 +473,104 @@ export default function CourseList() {
           </div>
         )}
 
-        {loading ? (
-          <div className="loading">Đang tải...</div>
-        ) : (
-          <>
-            {/* ── Filter Bar ── */}
-            <div className="filter-bar">
-              <div className="filter-header">
-                <span className="material-symbols-outlined">tune</span>
-                <span>Bộ lọc</span>
-              </div>
-              <div className="filter-pills">
-                {/* Search */}
-                <div className="filter-search-wrap">
-                  <span className="material-symbols-outlined">search</span>
-                  <input
-                    className="filter-search"
-                    type="text"
-                    placeholder="Tìm khóa học..."
-                    value={search}
-                    onChange={e => { setSearch(e.target.value); setPage(1); }}
-                  />
-                  {search && (
-                    <button className="filter-search-clear" onClick={() => { setSearch(""); setPage(1); }}>
-                      <span className="material-symbols-outlined">close</span>
-                    </button>
-                  )}
-                </div>
-
-                {/* Format dropdown */}
-                <div className="filter-dropdown-wrap" ref={formatRef}>
-                  <button
-                    className={`filter-pill ${filterFormat ? "active" : ""}`}
-                    onClick={() => setShowFormatMenu(v => !v)}
-                  >
-                    {filterFormat || "Hình thức"}
-                    <span className="material-symbols-outlined">
-                      {filterFormat ? "close" : "expand_more"}
-                    </span>
-                  </button>
-                  {showFormatMenu && (
-                    <div className="filter-dropdown">
-                      {["Online", "Offline", "Hybrid"].map(f => (
-                        <button
-                          key={f}
-                          className={`filter-dropdown-item ${filterFormat === f ? "selected" : ""}`}
-                          onClick={() => { setFilterFormat(filterFormat === f ? "" : f); setPage(1); setShowFormatMenu(false); }}
-                        >
-                          <span className="material-symbols-outlined">{fmtMeta(f).icon}</span>
-                          {f}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* Provider dropdown */}
-                <div className="filter-dropdown-wrap" ref={providerRef}>
-                  <button
-                    className={`filter-pill ${filterProvider ? "active" : ""}`}
-                    onClick={() => setShowProviderMenu(v => !v)}
-                  >
-                    {filterProvider || "Đơn vị đào tạo"}
-                    <span className="material-symbols-outlined">
-                      {filterProvider ? "close" : "expand_more"}
-                    </span>
-                  </button>
-                  {showProviderMenu && (
-                    <div className="filter-dropdown">
-                      {uniqueProviders.length === 0 ? (
-                        <div className="filter-dropdown-empty">Không có dữ liệu</div>
-                      ) : uniqueProviders.map(p => (
-                        <button
-                          key={p}
-                          className={`filter-dropdown-item ${filterProvider === p ? "selected" : ""}`}
-                          onClick={() => { setFilterProvider(filterProvider === p ? "" : p); setPage(1); setShowProviderMenu(false); }}
-                        >
-                          <span className="material-symbols-outlined">corporate_fare</span>
-                          {p}
-                        </button>
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {hasFilters && (
-                  <button className="filter-clear" onClick={clearFilters}>
-                    <span className="material-symbols-outlined">restart_alt</span>
-                    Xóa tất cả
-                  </button>
-                )}
-              </div>
-
-              <span className="filter-count">{pagination.totalItems} kết quả</span>
+        {/* ── Filter Bar (ALWAYS MOUNTED FOR INSTANT 0ms FILTERING) ── */}
+        <div className="filter-bar">
+          <div className="filter-header">
+            <span className="material-symbols-outlined">tune</span>
+            <span>Bộ lọc</span>
+          </div>
+          <div className="filter-pills">
+            {/* Search Input */}
+            <div className="filter-search-wrap">
+              <span className="material-symbols-outlined">search</span>
+              <input
+                className="filter-search"
+                type="text"
+                placeholder="Tìm khóa học, công nghệ, đối thủ..."
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+              />
+              {search && (
+                <button className="filter-search-clear" onClick={() => setSearch("")}>
+                  <span className="material-symbols-outlined">close</span>
+                </button>
+              )}
             </div>
 
-            {/* ── Table ── */}
+            {/* Format dropdown */}
+            <div className="filter-dropdown-wrap" ref={formatRef}>
+              <button
+                className={`filter-pill ${filterFormat ? "active" : ""}`}
+                onClick={() => setShowFormatMenu(v => !v)}
+              >
+                {filterFormat || "Hình thức"}
+                <span className="material-symbols-outlined">
+                  {filterFormat ? "close" : "expand_more"}
+                </span>
+              </button>
+              {showFormatMenu && (
+                <div className="filter-dropdown">
+                  {["Online", "Offline", "Hybrid"].map(f => (
+                    <button
+                      key={f}
+                      className={`filter-dropdown-item ${filterFormat === f ? "selected" : ""}`}
+                      onClick={() => { setFilterFormat(filterFormat === f ? "" : f); setShowFormatMenu(false); }}
+                    >
+                      <span className="material-symbols-outlined">{fmtMeta(f).icon}</span>
+                      {f}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {/* Provider dropdown */}
+            <div className="filter-dropdown-wrap" ref={providerRef}>
+              <button
+                className={`filter-pill ${filterProvider ? "active" : ""}`}
+                onClick={() => setShowProviderMenu(v => !v)}
+              >
+                {filterProvider || "Đơn vị đào tạo"}
+                <span className="material-symbols-outlined">
+                  {filterProvider ? "close" : "expand_more"}
+                </span>
+              </button>
+              {showProviderMenu && (
+                <div className="filter-dropdown">
+                  {uniqueProviders.length === 0 ? (
+                    <div className="filter-dropdown-empty">Không có dữ liệu</div>
+                  ) : uniqueProviders.map(p => (
+                    <button
+                      key={p}
+                      className={`filter-dropdown-item ${filterProvider === p ? "selected" : ""}`}
+                      onClick={() => { setFilterProvider(filterProvider === p ? "" : p); setShowProviderMenu(false); }}
+                    >
+                      <span className="material-symbols-outlined">corporate_fare</span>
+                      {p}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+
+            {hasFilters && (
+              <button className="filter-clear" onClick={clearFilters}>
+                <span className="material-symbols-outlined">restart_alt</span>
+                Xóa tất cả
+              </button>
+            )}
+          </div>
+
+          <span className="filter-count">{totalItems} kết quả</span>
+        </div>
+
+        {/* ── Table & Data Content ── */}
+        {loading ? (
+          <div className="loading" style={{ padding: "40px 0", textAlign: "center" }}>
+            Đang tải dữ liệu...
+          </div>
+        ) : (
+          <>
             <div className="course-table-container">
               <table className="course-table">
                 <thead>
@@ -562,7 +579,7 @@ export default function CourseList() {
                       <label className="checkbox-label">
                         <input
                           type="checkbox"
-                          checked={courses.length > 0 && courses.every(c => selectedCourses.has(c.id))}
+                          checked={displayedCourses.length > 0 && displayedCourses.every(c => selectedCourses.has(c.id))}
                           onChange={handleSelectAll}
                         />
                         <span className="checkbox-custom" />
@@ -577,18 +594,18 @@ export default function CourseList() {
                   </tr>
                 </thead>
                 <tbody>
-                  {courses.length === 0 ? (
+                  {displayedCourses.length === 0 ? (
                     <tr>
                       <td colSpan={7} className="empty-state">
                         <span className="material-symbols-outlined" style={{ fontSize: 40, display: "block", marginBottom: 8, color: "#c3c6d6" }}>inventory_2</span>
-                        Không có khóa học nào phù hợp
+                        Không có khóa học nào phù hợp với bộ lọc
                       </td>
                     </tr>
                   ) : (
-                    courses.map(course => {
+                    displayedCourses.map(course => {
                       const meta = fmtMeta(course.learningFormat);
                       const tools = arrayVal(course.toolCombo);
-                      const providerName = course.provider?.name || course.provider || "—";
+                      const providerName = typeof course.provider === "object" ? (course.provider?.name || "—") : (course.provider || "—");
                       return (
                         <tr
                           key={course.id}
@@ -683,13 +700,13 @@ export default function CourseList() {
               {/* Pagination controls */}
               <div className="pagination">
                 <span className="pagination-info">
-                  Hiển thị {pagination.totalItems > 0 ? (pagination.currentPage - 1) * pagination.limit + 1 : 0} – {Math.min(pagination.currentPage * pagination.limit, pagination.totalItems)} trên tổng số {pagination.totalItems} khóa học
+                  Hiển thị {totalItems > 0 ? (currentPage - 1) * limit + 1 : 0} – {Math.min(currentPage * limit, totalItems)} trên tổng số {totalItems} khóa học
                 </span>
-                {pagination.totalPages > 1 && (
+                {totalPages > 1 && (
                   <div className="pagination-controls">
                     <button
                       className="page-btn"
-                      disabled={!pagination.hasPrevPage}
+                      disabled={currentPage <= 1}
                       onClick={() => setPage(p => Math.max(1, p - 1))}
                       title="Trang trước"
                     >
@@ -698,8 +715,8 @@ export default function CourseList() {
                     {renderPaginationNumbers()}
                     <button
                       className="page-btn"
-                      disabled={!pagination.hasNextPage}
-                      onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
+                      disabled={currentPage >= totalPages}
+                      onClick={() => setPage(p => Math.min(totalPages, p + 1))}
                       title="Trang kế"
                     >
                       <span className="material-symbols-outlined">chevron_right</span>
@@ -719,7 +736,7 @@ export default function CourseList() {
                   </div>
                   <div className="action-bar-divider" />
                   {selectedCourses.size >= 2 && (
-                    <button className="btn btn-primary">
+                    <button className="btn btn-primary" onClick={() => navigate("/compare")}>
                       <span className="material-symbols-outlined">compare_arrows</span>
                       So sánh ngay
                     </button>

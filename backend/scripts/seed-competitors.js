@@ -92,7 +92,7 @@ const coursesData = [
     providerName: "Mentora",
     title: "Xay dung Agentic AI - He thong tri tue nhan tao da tac nhan",
     toolCombo: [
-      "Python", "LLM / Generative AI (GPT)", "OpenAI Agents SDK", "Multi-Agent Framework",
+      "Python", "LLM / G   enerative AI (GPT)", "OpenAI Agents SDK", "Multi-Agent Framework",
       "API & Tool Integration", "Docker / Kubernetes", "Workflow Automation",
     ],
     targetAudience: [

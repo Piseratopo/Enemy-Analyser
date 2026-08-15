@@ -191,25 +191,13 @@ export default function Dashboard() {
     return { totalCourses, totalProviders, activeProviders, formatSegments, topTools, maxToolCount, recent };
   }, [courses]);
 
-  if (loading) {
-    return (
-      <MainLayout>
-        <div className="db-page">
-          <div className="db-blob-1" />
-          <div className="db-blob-2" />
-          <div className="db-loading">Đang tải dữ liệu...</div>
-        </div>
-      </MainLayout>
-    );
-  }
-
   return (
     <MainLayout>
       <div className="db-page">
         <div className="db-blob-1" />
         <div className="db-blob-2" />
 
-        {/* ── Header ── */}
+        {/* ── Header (Luôn hiển thị) ── */}
         <div className="db-header">
           <div>
             <h1 className="db-title">Bảng điều khiển</h1>
@@ -234,6 +222,13 @@ export default function Dashboard() {
             </button>
           </div>
         </div>
+
+        {loading ? (
+          <div className="db-loading" style={{ padding: "60px 0", textAlign: "center" }}>
+            Đang tải dữ liệu...
+          </div>
+        ) : (
+          <>
 
         {/* ── Stats Row ── */}
         <div className="db-stats-grid">
@@ -388,6 +383,8 @@ export default function Dashboard() {
             </Link>
           </div>
         </div>
+        </>
+        )}
       </div>
     </MainLayout>
   );
