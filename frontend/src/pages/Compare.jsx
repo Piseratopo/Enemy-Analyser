@@ -111,6 +111,7 @@ const normalizeCourse = (course, index = 0) => {
 function Compare() {
   const matrixRef = useRef(null);
   const aiResultRef = useRef(null);
+  const pdfExportRef = useRef(null);
   const [search, setSearch] = useState("");
   const [courses, setCourses] = useState([]);
   const [savedComparisons, setSavedComparisons] = useState([]);
@@ -191,15 +192,16 @@ function Compare() {
     const title = comparisonTitle || "Bảng so sánh khóa học";
 
     try {
-      if (!matrixRef.current) {
+      const targetElement = pdfExportRef.current || matrixRef.current;
+      if (!targetElement) {
         showToast("Không thể xuất PDF lúc này, vui lòng thử lại.", "error");
         return;
       }
 
       showToast("Đang tạo PDF, vui lòng đợi...", "info");
 
-      // Capture the comparison matrix table
-      const canvas = await html2canvas(matrixRef.current, {
+      // Capture the comparison matrix table AND AI section if active
+      const canvas = await html2canvas(targetElement, {
         scale: 2,
         useCORS: true,
         logging: false,
@@ -702,13 +704,14 @@ function Compare() {
               </div>
             </div>
 
-            <div className="compare-table-wrap">
-              <div
-                ref={matrixRef}
-                className="compare-matrix"
-                style={{ "--col-count": colCount }}
-              >
-                {/* Header Row */}
+            <div ref={pdfExportRef} className="compare-export-wrapper" style={{ background: "#ffffff", padding: "12px", borderRadius: "16px" }}>
+              <div className="compare-table-wrap">
+                <div
+                  ref={matrixRef}
+                  className="compare-matrix"
+                  style={{ "--col-count": colCount }}
+                >
+                  {/* Header Row */}
                 <div className="compare-matrix-row header-row">
                   <div className="compare-metric-label-cell header">
                     <span className="material-symbols-outlined">analytics</span>
@@ -892,6 +895,7 @@ function Compare() {
                 )}
               </div>
             )}
+            </div>
           </div>
         )}
 

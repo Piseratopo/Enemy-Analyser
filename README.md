@@ -4,6 +4,8 @@
 
 **Trải nghiệm trực tuyến (Live Demo):** [Course Analyser](https://enemy-analyser.vercel.app/dashboard)
 
+**Video giới thiệu:** [Google Drive](https://drive.google.com/file/d/1vbpLzQLK0z8x0wayD3YIAxubXQbD5CTI/view?usp=sharing)
+
 ---
 
 ## Tính năng nổi bật
@@ -187,8 +189,3 @@ Enemy-Analyser/
 - Output Directory: `dist`.
 - Cấu hình Environment Variable: `VITE_API_URL` trỏ tới domain của Backend server.
 
----
-
-## Đóng góp & Bản quyền
-
-Dự án phục vụ mục đích nghiên cứu và phân tích thị trường đào tạo trí tuệ nhân tạo. Mọi đóng góp (Pull Request / Issue) đều được hoan nghênh!
