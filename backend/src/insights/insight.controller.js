@@ -8,7 +8,7 @@ router.use(authMiddleware);
 
 router.get("/", async (req, res) => {
    try {
-      const data = await insightService.getInsightsByUserId(req.user.userId);
+      const data = await insightService.getInsights(req.user);
       return res.status(200).json(data);
    } catch (error) {
       return res.status(500).json({ message: error.message });
@@ -17,7 +17,7 @@ router.get("/", async (req, res) => {
 
 router.get("/:id", async (req, res) => {
    try {
-      const data = await insightService.getInsightById(req.params.id, req.user.userId);
+      const data = await insightService.getInsightById(req.params.id, req.user);
       return res.status(200).json(data);
    } catch (error) {
       return res.status(404).json({ message: error.message });
@@ -35,7 +35,7 @@ router.post("/", requireStaff, async (req, res) => {
 
 router.put("/:id", requireStaff, async (req, res) => {
    try {
-      const data = await insightService.updateInsight(req.params.id, req.body, req.user.userId);
+      const data = await insightService.updateInsight(req.params.id, req.body, req.user);
       return res.status(200).json(data);
    } catch (error) {
       return res.status(400).json({ message: error.message });
@@ -44,7 +44,7 @@ router.put("/:id", requireStaff, async (req, res) => {
 
 router.delete("/:id", requireStaff, async (req, res) => {
    try {
-      await insightService.deleteInsight(req.params.id, req.user.userId);
+      await insightService.deleteInsight(req.params.id, req.user);
       return res.status(200).json({ message: "Xóa learner insight thành công." });
    } catch (error) {
       return res.status(400).json({ message: error.message });

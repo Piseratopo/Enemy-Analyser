@@ -2,6 +2,15 @@ import { db } from "../config/firebase.js";
 
 const COLLECTION_NAME = "learner_insights";
 
+export const getAll = async () => {
+   const snapshot = await db.collection(COLLECTION_NAME).get();
+   const list = [];
+   snapshot.forEach(doc => {
+      list.push({ id: doc.id, ...doc.data() });
+   });
+   return list;
+};
+
 export const getAllByUserId = async (userId) => {
    const snapshot = await db.collection(COLLECTION_NAME).where("createdBy", "==", userId).get();
    const list = [];
